@@ -1,0 +1,23 @@
+package com.parking.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Data
+@TableName("t_payment_record")
+public class PaymentRecord {
+    @TableId(type = IdType.ASSIGN_ID)
+    private Long id;
+    private Long userId;
+    private Long vehicleRecordId;
+    private BigDecimal amount;
+    private BigDecimal balanceBefore;
+    private BigDecimal balanceAfter;
+    private String type;
+    private LocalDateTime createdAt;
+}

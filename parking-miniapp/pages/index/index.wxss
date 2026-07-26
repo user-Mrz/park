@@ -1,0 +1,26 @@
+.container { padding: 0 0 30rpx; }
+.header { background: linear-gradient(135deg, #007AFF, #0055CC); padding: 40rpx 30rpx 50rpx; color: #fff; }
+.header-title { font-size: 40rpx; font-weight: bold; margin-bottom: 10rpx; }
+.header-balance { font-size: 28rpx; opacity: 0.9; }
+.balance-amount { font-weight: bold; }
+.actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20rpx; padding: 30rpx; margin-top: -30rpx; }
+.action-card { background: #fff; border-radius: 16rpx; padding: 30rpx; text-align: center; box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.08); }
+.action-icon { font-size: 48rpx; margin-bottom: 10rpx; }
+.action-text { font-size: 26rpx; color: #333; font-weight: 500; }
+.section { margin: 20rpx; }
+.section-title { font-size: 32rpx; font-weight: bold; margin-bottom: 20rpx; color: #333; }
+.parking-card { background: #fff; border-radius: 16rpx; padding: 30rpx; box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06); }
+.parking-row { display: flex; justify-content: space-between; padding: 12rpx 0; font-size: 28rpx; }
+.parking-row .label { color: #999; }
+.parking-row .value { color: #333; }
+.highlight { color: #E6A23C; font-weight: bold; }
+.reserve-card { background: #fff; border-radius: 12rpx; padding: 20rpx 30rpx; margin-bottom: 16rpx; box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04); }
+.reserve-header { display: flex; justify-content: space-between; margin-bottom: 10rpx; }
+.reserve-no { font-size: 26rpx; color: #666; }
+.reserve-detail { font-size: 24rpx; color: #999; margin-top: 4rpx; }
+.reserve-status { color: #E6A23C; font-size: 24rpx; }
+.spots-grid { display: flex; flex-wrap: wrap; gap: 16rpx; }
+.spot-item { background: #fff; border-radius: 12rpx; padding: 20rpx; width: calc(25% - 12rpx); text-align: center; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); box-sizing: border-box; }
+.spot-code { display: block; font-size: 26rpx; font-weight: bold; color: #333; }
+.spot-price { display: block; font-size: 22rpx; color: #F56C6C; margin-top: 4rpx; }
+.empty { text-align: center; color: #999; padding: 40rpx 0; font-size: 26rpx; }

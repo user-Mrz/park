@@ -1,0 +1,25 @@
+<view class="container">
+  <view class="enter-card">
+    <view class="icon-area">🚗</view>
+    <view class="title">车辆入场</view>
+    <view class="desc">确认进入停车场</view>
+
+    <view class="form-item">
+      <text class="label">选择车位</text>
+      <picker mode="selector" range="{{spots}}" range-key="spotCode" bindchange="onSpotChange">
+        <view class="picker-view">{{selectedSpot ? selectedSpot.spotCode + ' (' + selectedSpot.area + ')' : '请选择车位'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="label">车牌号</text>
+      <input class="input" value="{{plateNumber}}" placeholder="请输入车牌号" bindinput="onInput" data-field="plateNumber"/>
+    </view>
+
+    <view class="info-row" wx:if="{{selectedSpot}}">
+      <text>费率：¥{{selectedSpot.pricePerHour}}/小时</text>
+    </view>
+
+    <button class="enter-btn" bindtap="handleEnter" loading="{{submitting}}">确认入场</button>
+  </view>
+</view>

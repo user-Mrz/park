@@ -1,0 +1,39 @@
+<view class="container">
+  <view class="tabs">
+    <view class="tab-item {{tab === 0 ? 'active' : ''}}" bindtap="switchTab" data-tab="0">停车记录</view>
+    <view class="tab-item {{tab === 1 ? 'active' : ''}}" bindtap="switchTab" data-tab="1">充值记录</view>
+    <view class="tab-item {{tab === 2 ? 'active' : ''}}" bindtap="switchTab" data-tab="2">扣费记录</view>
+  </view>
+
+  <!-- Vehicle Records -->
+  <view wx:if="{{tab === 0}}">
+    <view class="record-card" wx:for="{{vehicleRecords}}" wx:key="id">
+      <view class="record-header"><text class="plate">{{item.plateNumber}}</text><text class="status">{{item.status === 0 ? '在场' : '已离场'}}</text></view>
+      <view class="record-row"><text class="rl">入场</text><text>{{item.entryTime}}</text></view>
+      <view class="record-row" wx:if="{{item.exitTime}}"><text class="rl">离场</text><text>{{item.exitTime}}</text></view>
+      <view class="record-row" wx:if="{{item.totalFee}}"><text class="rl">费用</text><text class="fee-text">¥{{item.totalFee}}</text></view>
+    </view>
+    <view wx:if="{{vehicleRecords.length === 0}}" class="empty">暂无记录</view>
+  </view>
+
+  <!-- Recharge Records -->
+  <view wx:if="{{tab === 1}}">
+    <view class="record-card" wx:for="{{rechargeRecords}}" wx:key="id">
+      <view class="record-row"><text class="rl">订单号</text><text>{{item.orderNo}}</text></view>
+      <view class="record-row"><text class="rl">金额</text><text class="amount-in">+¥{{item.amount}}</text></view>
+      <view class="record-row"><text class="rl">时间</text><text>{{item.createdAt}}</text></view>
+    </view>
+    <view wx:if="{{rechargeRecords.length === 0}}" class="empty">暂无记录</view>
+  </view>
+
+  <!-- Payment Records -->
+  <view wx:if="{{tab === 2}}">
+    <view class="record-card" wx:for="{{paymentRecords}}" wx:key="id">
+      <view class="record-row"><text class="rl">扣费</text><text class="amount-out">-¥{{item.amount}}</text></view>
+      <view class="record-row"><text class="rl">扣前</text><text>¥{{item.balanceBefore}}</text></view>
+      <view class="record-row"><text class="rl">扣后</text><text>¥{{item.balanceAfter}}</text></view>
+      <view class="record-row"><text class="rl">时间</text><text>{{item.createdAt}}</text></view>
+    </view>
+    <view wx:if="{{paymentRecords.length === 0}}" class="empty">暂无记录</view>
+  </view>
+</view>

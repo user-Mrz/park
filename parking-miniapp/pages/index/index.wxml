@@ -1,0 +1,64 @@
+<view class="container">
+  <!-- Header -->
+  <view class="header">
+    <view class="header-title">停车场管理系统</view>
+    <view class="header-balance" wx:if="{{userInfo}}">
+      余额：<text class="balance-amount">¥{{userInfo.balance || '0.00'}}</text>
+    </view>
+  </view>
+
+  <!-- Quick Actions -->
+  <view class="actions-grid">
+    <view class="action-card" bindtap="goReserve">
+      <view class="action-icon">📅</view>
+      <text class="action-text">预约车位</text>
+    </view>
+    <view class="action-card" bindtap="goEnter">
+      <view class="action-icon">🚗</view>
+      <text class="action-text">进入停车场</text>
+    </view>
+    <view class="action-card" bindtap="goExit">
+      <view class="action-icon">🏁</view>
+      <text class="action-text">离开停车场</text>
+    </view>
+    <view class="action-card" bindtap="goRecharge">
+      <view class="action-icon">💰</view>
+      <text class="action-text">账户充值</text>
+    </view>
+  </view>
+
+  <!-- Current Parking -->
+  <view class="section" wx:if="{{currentParking}}">
+    <view class="section-title">当前停车</view>
+    <view class="parking-card">
+      <view class="parking-row"><text class="label">车牌号</text><text class="value">{{currentParking.plateNumber}}</text></view>
+      <view class="parking-row"><text class="label">入场时间</text><text class="value">{{currentParking.entryTime}}</text></view>
+      <view class="parking-row"><text class="label">已停时长</text><text class="value highlight">{{durationText}}</text></view>
+    </view>
+  </view>
+
+  <!-- Reservations -->
+  <view class="section">
+    <view class="section-title">近期预约</view>
+    <view wx:if="{{reservations.length === 0}}" class="empty">暂无预约记录</view>
+    <view class="reserve-card" wx:for="{{reservations}}" wx:key="id">
+      <view class="reserve-header">
+        <text class="reserve-no">{{item.reservationNo}}</text>
+        <text class="reserve-status">进行中</text>
+      </view>
+      <view class="reserve-detail"><text>车位{{item.spotId}} | {{item.startTime}}~{{item.endTime}}</text></view>
+      <view class="reserve-detail"><text>金额: ¥{{item.totalAmount}}</text></view>
+    </view>
+  </view>
+
+  <!-- Available Spots -->
+  <view class="section">
+    <view class="section-title">空闲车位</view>
+    <view class="spots-grid" wx:if="{{spots.length > 0}}">
+      <view class="spot-item" wx:for="{{spots}}" wx:key="id">
+        <text class="spot-code">{{item.spotCode}}</text>
+        <text class="spot-price">¥{{item.pricePerHour}}/h</text>
+      </view>
+    </view>
+  </view>
+</view>

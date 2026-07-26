@@ -1,0 +1,13 @@
+.container { padding: 30rpx; }
+.exit-card { background: #fff; border-radius: 16rpx; padding: 50rpx 30rpx; text-align: center; }
+.icon-area { font-size: 100rpx; margin-bottom: 10rpx; }
+.title { font-size: 36rpx; font-weight: bold; color: #333; margin-bottom: 30rpx; }
+.info-box { text-align: left; margin-bottom: 30rpx; }
+.info-row { display: flex; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f0f0f0; font-size: 28rpx; }
+.info-label { color: #999; }
+.highlight { color: #E6A23C; font-weight: bold; }
+.fee-row { margin-top: 10rpx; }
+.fee { font-size: 36rpx; font-weight: bold; color: #F56C6C; }
+.warning { background: #fef0f0; color: #F56C6C; padding: 16rpx; border-radius: 8rpx; font-size: 26rpx; margin-bottom: 20rpx; }
+.exit-btn { width: 100%; background: #F56C6C; color: #fff; border-radius: 12rpx; font-size: 32rpx; }
+.exit-btn[disabled] { opacity: 0.5; }

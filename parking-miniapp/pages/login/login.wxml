@@ -1,0 +1,36 @@
+<view class="login-container">
+  <view class="login-card">
+    <view class="app-logo">🅿️</view>
+    <view class="app-name">停车场</view>
+    <view class="app-desc">智能停车，轻松出行</view>
+
+    <!-- Phone Login -->
+    <block wx:if="{{loginType === 'phone'}}">
+      <view class="input-group"><input class="input" value="{{phone}}" type="number" maxlength="11" placeholder="请输入手机号" bindinput="onInput" data-field="phone"/></view>
+      <view class="input-group"><input class="input" value="{{password}}" type="password" placeholder="密码" bindinput="onInput" data-field="password"/></view>
+      <view class="captcha-row">
+        <input class="input captcha-input" value="{{captchaCode}}" placeholder="验证码" bindinput="onInput" data-field="captchaCode"/>
+        <image wx:if="{{captchaImg}}" src="{{captchaImg}}" class="captcha-img" bindtap="loadCaptcha"/>
+      </view>
+      <button class="login-btn" bindtap="handleLogin" loading="{{loading}}">登录</button>
+      <view class="switch-row"><text>没有账号？</text><text class="link" bindtap="switchType" data-type="register">立即注册</text></view>
+    </block>
+
+    <!-- Register -->
+    <block wx:if="{{loginType === 'register'}}">
+      <view class="input-group"><input class="input" value="{{phone}}" type="number" maxlength="11" placeholder="手机号" bindinput="onInput" data-field="phone"/></view>
+      <view class="input-group"><input class="input" value="{{password}}" type="password" placeholder="密码" bindinput="onInput" data-field="password"/></view>
+      <view class="input-group"><input class="input" value="{{nickname}}" placeholder="昵称（选填）" bindinput="onInput" data-field="nickname"/></view>
+      <view class="input-group"><input class="input" value="{{plateNumber}}" placeholder="车牌号（选填）" bindinput="onInput" data-field="plateNumber"/></view>
+      <view class="captcha-row">
+        <input class="input captcha-input" value="{{captchaCode}}" placeholder="验证码" bindinput="onInput" data-field="captchaCode"/>
+        <image wx:if="{{captchaImg}}" src="{{captchaImg}}" class="captcha-img" bindtap="loadCaptcha"/>
+      </view>
+      <button class="login-btn" bindtap="handleRegister" loading="{{loading}}">注册</button>
+      <view class="switch-row"><text>已有账号？</text><text class="link" bindtap="switchType" data-type="phone">去登录</text></view>
+    </block>
+
+    <view class="divider"><text>其他登录方式</text></view>
+    <button class="wechat-btn" bindtap="handleWechatLogin">微信一键登录</button>
+  </view>
+</view>

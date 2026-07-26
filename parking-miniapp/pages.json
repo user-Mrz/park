@@ -1,0 +1,58 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": { "navigationBarTitleText": "停车场" }
+    },
+    {
+      "path": "pages/login/login",
+      "style": { "navigationBarTitleText": "登录" }
+    },
+    {
+      "path": "pages/reserve/reserve",
+      "style": { "navigationBarTitleText": "预约车位" }
+    },
+    {
+      "path": "pages/enter/enter",
+      "style": { "navigationBarTitleText": "进入停车场" }
+    },
+    {
+      "path": "pages/exit/exit",
+      "style": { "navigationBarTitleText": "离开停车场" }
+    },
+    {
+      "path": "pages/mine/mine",
+      "style": { "navigationBarTitleText": "我的" }
+    },
+    {
+      "path": "pages/recharge/recharge",
+      "style": { "navigationBarTitleText": "账户充值" }
+    },
+    {
+      "path": "pages/record/record",
+      "style": { "navigationBarTitleText": "停车记录" }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "停车场",
+    "navigationBarBackgroundColor": "#007AFF",
+    "backgroundColor": "#F5F5F5"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#007AFF",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的"
+      }
+    ]
+  }
+}

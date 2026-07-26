@@ -1,0 +1,31 @@
+<view class="container">
+  <view class="form-card">
+    <view class="form-title">选择车位</view>
+    <picker mode="selector" range="{{spots}}" range-key="spotCode" bindchange="onSpotChange">
+      <view class="picker-view">{{selectedSpot ? selectedSpot.spotCode + ' - ¥' + selectedSpot.pricePerHour + '/h' : '请选择车位'}}</view>
+    </picker>
+
+    <view class="form-title">开始日期</view>
+    <picker mode="selector" range="{{dateList}}" bindchange="onDateChange">
+      <view class="picker-view">{{startDate || '选择日期'}}</view>
+    </picker>
+
+    <view class="form-title">开始时间</view>
+    <picker mode="time" value="{{startTime}}" bindchange="onTimeChange">
+      <view class="picker-view">{{startTime}}</view>
+    </picker>
+
+    <view class="form-title">预约时长</view>
+    <picker mode="selector" range="{{durations}}" range-key="label" bindchange="onDurationChange">
+      <view class="picker-view">{{durations[durationIndex].label}}</view>
+    </picker>
+
+    <view class="form-title" wx:if="{{endTime}}">结束时间: {{endTime}}</view>
+
+    <view class="fee-preview" wx:if="{{totalFee > 0}}">
+      <text>预计费用：</text><text class="fee-amount">¥{{totalFee}}</text>
+    </view>
+
+    <button class="submit-btn" bindtap="handleReserve" loading="{{submitting}}" disabled="{{!selectedSpot}}">确认预约</button>
+  </view>
+</view>

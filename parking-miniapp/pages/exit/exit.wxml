@@ -1,0 +1,20 @@
+<view class="container">
+  <view class="exit-card">
+    <view class="icon-area">🏁</view>
+    <view class="title">车辆离场</view>
+
+    <view class="info-box" wx:if="{{currentRecord}}">
+      <view class="info-row"><text class="info-label">车牌号</text><text>{{currentRecord.plateNumber}}</text></view>
+      <view class="info-row"><text class="info-label">入场时间</text><text>{{currentRecord.entryTime}}</text></view>
+      <view class="info-row"><text class="info-label">已停时长</text><text class="highlight">{{durationText}}</text></view>
+      <view class="info-row fee-row"><text class="info-label">预计费用</text><text class="fee">¥{{estimatedFee}}</text></view>
+      <view class="info-row"><text class="info-label">账户余额</text><text>¥{{userInfo.balance || '0.00'}}</text></view>
+    </view>
+
+    <view class="warning" wx:if="{{estimatedFee > (userInfo && userInfo.balance || 0)}}">
+      ⚠️ 余额不足，请先充值再离场
+    </view>
+
+    <button class="exit-btn" bindtap="handleExit" loading="{{submitting}}" disabled="{{estimatedFee > (userInfo && userInfo.balance || 0)}}">确认离场并支付</button>
+  </view>
+</view>

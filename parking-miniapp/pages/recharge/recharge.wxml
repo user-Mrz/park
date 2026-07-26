@@ -1,0 +1,20 @@
+<view class="container">
+  <view class="recharge-card">
+    <view class="balance-section">
+      <text class="balance-label">当前余额</text>
+      <text class="balance-value">¥{{(userInfo && userInfo.balance) || '0.00'}}</text>
+    </view>
+
+    <view class="amount-title">选择充值金额</view>
+    <view class="amount-grid">
+      <view class="amount-item {{amount === a && !customAmount ? 'active' : ''}}" wx:for="{{presetAmounts}}" wx:key="*this" bindtap="selectAmount" data-amount="{{item}}">¥{{item}}</view>
+    </view>
+
+    <view class="custom-amount">
+      <text class="custom-label">自定义金额</text>
+      <input class="custom-input" value="{{customAmount}}" type="digit" placeholder="输入金额" bindinput="onInput" data-field="customAmount"/>
+    </view>
+
+    <button class="recharge-btn" bindtap="handleRecharge" loading="{{submitting}}">立即充值</button>
+  </view>
+</view>

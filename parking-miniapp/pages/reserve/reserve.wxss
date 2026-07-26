@@ -1,0 +1,8 @@
+.container { padding: 30rpx; }
+.form-card { background: #fff; border-radius: 16rpx; padding: 30rpx; }
+.form-title { font-size: 28rpx; color: #666; margin: 20rpx 0 10rpx; }
+.picker-view { height: 88rpx; line-height: 88rpx; background: #f8f8f8; border-radius: 12rpx; padding: 0 24rpx; font-size: 28rpx; color: #333; }
+.fee-preview { text-align: center; margin: 30rpx 0; font-size: 30rpx; }
+.fee-amount { font-size: 48rpx; font-weight: bold; color: #F56C6C; }
+.submit-btn { width: 100%; background: #007AFF; color: #fff; border-radius: 12rpx; font-size: 32rpx; margin-top: 20rpx; }
+.submit-btn[disabled] { opacity: 0.5; }

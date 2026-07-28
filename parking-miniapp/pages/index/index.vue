@@ -105,9 +105,10 @@ const areaGroups = ref([])
 
 function formatDuration(entryTime) {
   if (!entryTime) return '--'
-  // iOS 兼容日期解析
-  const parts = entryTime.split(' ')[0].split('-')
-  const times = (entryTime.split(' ')[1] || '00:00:00').split(':')
+  // iOS 兼容日期解析，兼容空格和 T 分隔符
+  const normalized = entryTime.replace('T', ' ')
+  const parts = normalized.split(' ')[0].split('-')
+  const times = (normalized.split(' ')[1] || '00:00:00').split(':')
   const start = new Date(+parts[0], +parts[1] - 1, +parts[2], +times[0], +times[1], +times[2] || 0).getTime()
   const now = Date.now()
   const diff = Math.floor((now - start) / 1000 / 60)

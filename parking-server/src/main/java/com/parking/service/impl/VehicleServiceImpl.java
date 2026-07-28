@@ -3,6 +3,7 @@ package com.parking.service.impl;
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.parking.common.BusinessException;
 import com.parking.dto.VehicleEnterDTO;
 import com.parking.entity.*;
@@ -53,6 +54,13 @@ public class VehicleServiceImpl implements VehicleService {
             }
         }
         if (spot.getStatus() != 0 && spot.getStatus() != 2) throw new BusinessException("Spot is occupied");
+        // CAS: 原子更新车位状态，防止并发入场
+        int spotRows = parkingSpotMapper.update(null,
+                new LambdaUpdateWrapper<ParkingSpot>()
+                        .eq(ParkingSpot::getId, dto.getSpotId())
+                        .in(ParkingSpot::getStatus, 0, 2)
+                        .set(ParkingSpot::getStatus, 1));
+        if (spotRows == 0) throw new BusinessException("Spot was just occupied by another vehicle");
         String plateNumber = dto.getPlateNumber() != null ? dto.getPlateNumber() : user.getPlateNumber();
         if (plateNumber == null || plateNumber.isEmpty()) throw new BusinessException("Please set your license plate first");
         Snowflake sf = IdUtil.getSnowflake(1, 4);
@@ -66,8 +74,6 @@ public class VehicleServiceImpl implements VehicleService {
         record.setStatus(0); // parked
         record.setPaymentStatus(0); // unpaid
         vehicleRecordMapper.insert(record);
-        spot.setStatus(1); // occupied
-        parkingSpotMapper.updateById(spot);
         // Mark reservation as completed if using one
         if (reservation != null) {
             reservation.setStatus(2); // completed

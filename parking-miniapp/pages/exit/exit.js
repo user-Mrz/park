@@ -1,10 +1,11 @@
 const app = getApp()
 
-// iOS 兼容的日期解析
+// iOS 兼容的日期解析，兼容空格和 T 分隔符
 function parseDateTime(str) {
   if (!str) return new Date()
-  var parts = str.split(' ')[0].split('-')
-  var times = (str.split(' ')[1] || '00:00:00').split(':')
+  var s = str.replace('T', ' ')
+  var parts = s.split(' ')[0].split('-')
+  var times = (s.split(' ')[1] || '00:00:00').split(':')
   return new Date(+parts[0], +parts[1] - 1, +parts[2], +times[0], +times[1], +times[2] || 0)
 }
 

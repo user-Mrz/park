@@ -108,11 +108,15 @@ async function fetchUserInfo() {
       uni.setStorageSync('userInfo', JSON.stringify(res.data))
     }
   } catch (e) {
-    // Fallback to cached data on network error
-    try {
-      const stored = uni.getStorageSync('userInfo')
-      if (stored) userInfo.value = JSON.parse(stored)
-    } catch (e2) { userInfo.value = null }
+    // 仅网络错误时降级用缓存；401 已由 request 工具清除 token 并跳转
+    if (uni.getStorageSync('token')) {
+      try {
+        const stored = uni.getStorageSync('userInfo')
+        if (stored) userInfo.value = JSON.parse(stored)
+      } catch (e2) { userInfo.value = null }
+    } else {
+      userInfo.value = null
+    }
   }
 }
 

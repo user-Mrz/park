@@ -2,11 +2,11 @@ package com.parking.service.impl;
 
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.parking.common.BusinessException;
 import com.parking.dto.ReservationDTO;
 import com.parking.entity.ParkingSpot;
 import com.parking.entity.Reservation;
-import com.parking.entity.SystemConfig;
 import com.parking.mapper.ParkingSpotMapper;
 import com.parking.mapper.ReservationMapper;
 import com.parking.mapper.SystemConfigMapper;
@@ -45,7 +45,14 @@ public class ReservationServiceImpl implements ReservationService {
         if (days > 30) throw new BusinessException("Maximum reservation is 30 days");
         ParkingSpot spot = parkingSpotMapper.selectById(dto.getSpotId());
         if (spot == null) throw new BusinessException("Parking spot not found");
+        // CAS: 原子更新，只有空闲车位才能被预约
         if (spot.getStatus() != 0) throw new BusinessException("Parking spot is not available");
+        int rows = parkingSpotMapper.update(null,
+                new LambdaUpdateWrapper<ParkingSpot>()
+                        .eq(ParkingSpot::getId, dto.getSpotId())
+                        .eq(ParkingSpot::getStatus, 0)  // 只有空闲状态才能预约
+                        .set(ParkingSpot::getStatus, 2));
+        if (rows == 0) throw new BusinessException("Parking spot was just taken by another user");
         BigDecimal durationHours = BigDecimal.valueOf(minutes).divide(BigDecimal.valueOf(60), 1, RoundingMode.HALF_UP);
         BigDecimal totalAmount = spot.getPricePerHour().multiply(durationHours);
         Snowflake sf = IdUtil.getSnowflake(1, 3);
@@ -60,8 +67,6 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setTotalAmount(totalAmount);
         reservation.setStatus(1); // active
         reservationMapper.insert(reservation);
-        spot.setStatus(2); // reserved
-        parkingSpotMapper.updateById(spot);
         return reservation;
     }
 
@@ -71,15 +76,19 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = reservationMapper.selectById(reservationId);
         if (reservation == null) throw new BusinessException("Reservation not found");
         if (!reservation.getUserId().equals(userId)) throw new BusinessException("Not your reservation");
-        if (reservation.getStatus() != 1 && reservation.getStatus() != 0) {
-            throw new BusinessException("Reservation cannot be cancelled in current status");
+        if (reservation.getStatus() != 1) {
+            throw new BusinessException("Only active reservations can be cancelled");
         }
         reservation.setStatus(3); // cancelled
         reservationMapper.updateById(reservation);
+        // CAS: 只有该预约占用的车位才释放
         ParkingSpot spot = parkingSpotMapper.selectById(reservation.getSpotId());
         if (spot != null && spot.getStatus() == 2) {
-            spot.setStatus(0); // release
-            parkingSpotMapper.updateById(spot);
+            parkingSpotMapper.update(null,
+                    new LambdaUpdateWrapper<ParkingSpot>()
+                            .eq(ParkingSpot::getId, spot.getId())
+                            .eq(ParkingSpot::getStatus, 2)
+                            .set(ParkingSpot::getStatus, 0));
         }
     }
 

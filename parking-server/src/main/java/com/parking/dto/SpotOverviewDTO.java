@@ -1,11 +1,11 @@
 package com.parking.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Data
 public class SpotOverviewDTO {
@@ -43,6 +43,7 @@ public class SpotOverviewDTO {
         private String plateNumber;
         private String nickname;
         private String phone;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
         private LocalDateTime entryTime;
         private BigDecimal spotPricePerHour;
     }
@@ -56,7 +57,9 @@ public class SpotOverviewDTO {
         private String nickname;
         private String phone;
         private String plateNumber;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
         private LocalDateTime startTime;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
         private LocalDateTime endTime;
         private BigDecimal durationHours;
         private BigDecimal totalAmount;

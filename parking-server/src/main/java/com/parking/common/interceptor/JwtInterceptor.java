@@ -1,6 +1,8 @@
 package com.parking.common.interceptor;
 
 import com.parking.common.UserContext;
+import com.parking.entity.User;
+import com.parking.mapper.UserMapper;
 import com.parking.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,9 +17,11 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class JwtInterceptor implements HandlerInterceptor {
 
     private final JwtUtil jwtUtil;
+    private final UserMapper userMapper;
 
-    public JwtInterceptor(JwtUtil jwtUtil) {
+    public JwtInterceptor(JwtUtil jwtUtil, UserMapper userMapper) {
         this.jwtUtil = jwtUtil;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -38,7 +42,17 @@ public class JwtInterceptor implements HandlerInterceptor {
                 response.getWriter().write("{\"code\":403,\"message\":\"Admin permission required\"}");
                 return false;
             }
-            UserContext.setUserId(Long.valueOf(claims.getSubject()));
+            Long userId = Long.valueOf(claims.getSubject());
+            // 非管理员请求时，检查用户是否被禁用
+            if (!"admin".equals(role)) {
+                User user = userMapper.selectById(userId);
+                if (user == null || user.getStatus() == 0) {
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter().write("{\"code\":401,\"message\":\"Account has been disabled or deleted\"}");
+                    return false;
+                }
+            }
+            UserContext.setUserId(userId);
             UserContext.setPhone(claims.get("phone", String.class));
             UserContext.setRole(role);
             return true;

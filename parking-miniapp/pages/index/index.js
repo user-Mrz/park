@@ -1,8 +1,10 @@
 const app = getApp()
 
-// iOS 兼容日期解析
+// iOS 兼容日期解析，兼容空格和 T 分隔符
 function parseDateTime(str) {
   if (!str) return null
+  // 将 T 替换为空格，统一处理
+  str = str.replace('T', ' ')
   var parts = str.split(' ')[0].split('-')
   var times = (str.split(' ')[1] || '00:00:00').split(':')
   return new Date(+parts[0], +parts[1] - 1, +parts[2], +times[0], +times[1], +times[2] || 0)
@@ -38,7 +40,15 @@ Page({
         url: app.globalData.baseUrl + '/user/info',
         header: { 'Authorization': 'Bearer ' + token },
         success: function(res) {
-          if (res.data.code === 200) self.setData({ userInfo: res.data.data })
+          if (res.data.code === 200) {
+            self.setData({ userInfo: res.data.data })
+          } else if (res.data.code === 401) {
+            // 账号被禁用或 token 失效
+            wx.removeStorageSync('token')
+            wx.removeStorageSync('userInfo')
+            self.setData({ userInfo: null })
+            wx.reLaunch({ url: '/pages/login/login' })
+          }
         }
       })
     }

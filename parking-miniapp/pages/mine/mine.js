@@ -24,8 +24,13 @@ Page({
         if (res.data.code === 200) {
           const info = res.data.data
           this.setData({ isLoggedIn: true, userInfo: info })
-          // 同步缓存
           wx.setStorageSync('userInfo', JSON.stringify(info))
+        } else if (res.data.code === 401) {
+          // 账号被禁用或 token 失效，强制登出
+          wx.removeStorageSync('token')
+          wx.removeStorageSync('userInfo')
+          this.setData({ isLoggedIn: false, userInfo: null })
+          wx.reLaunch({ url: '/pages/login/login' })
         }
       },
       fail: () => {

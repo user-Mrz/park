@@ -21,7 +21,6 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   (response) => {
     const res = response.data
-    console.log('拦截器收到的数据', res)
     if (res.code !== 200) {
       ElMessage.error(res.message || 'Request failed')
       if (res.code === 401) {

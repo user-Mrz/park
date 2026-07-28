@@ -28,15 +28,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public R<?> handleException(Exception e) {
-        Throwable cause = e;
-        while (cause.getCause() != null && cause.getCause() != cause) {
-            cause = cause.getCause();
-        }
-        String msg = cause.getMessage();
-        if (msg == null || msg.isBlank()) {
-            msg = cause.getClass().getSimpleName();
-        }
-        log.error("Unexpected error: {}", msg, e);
-        return R.fail(500, "服务器错误: " + msg);
+        log.error("Unexpected error", e);
+        return R.fail(500, "服务器内部错误，请稍后重试");
     }
 }

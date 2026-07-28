@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,32 +32,38 @@ public class ScheduledTaskService {
     /**
      * Every 60 seconds, scan for active reservations whose endTime + grace period has passed,
      * mark them as expired, and release the parking spot.
+     * Each reservation is processed independently to prevent one failure from rolling back all.
      */
     @Scheduled(fixedRate = 60000)
-    @Transactional
     public void expireReservations() {
-        try {
-            LocalDateTime cutoff = LocalDateTime.now().minusMinutes(gracePeriodMinutes);
-            // Find active reservations where endTime + grace period is in the past
-            List<Reservation> expiredList = reservationMapper.selectList(
-                    new LambdaQueryWrapper<Reservation>()
-                            .eq(Reservation::getStatus, 1)       // active
-                            .lt(Reservation::getEndTime, cutoff)  // endTime < now - grace
-            );
-            if (expiredList.isEmpty()) return;
-            for (Reservation r : expiredList) {
-                r.setStatus(4); // expired
-                reservationMapper.updateById(r);
-                // Release the parking spot if it's still in reserved status
-                ParkingSpot spot = parkingSpotMapper.selectById(r.getSpotId());
-                if (spot != null && spot.getStatus() == 2) {
-                    spot.setStatus(0); // back to vacant
-                    parkingSpotMapper.updateById(spot);
-                }
+        LocalDateTime cutoff = LocalDateTime.now().minusMinutes(gracePeriodMinutes);
+        List<Reservation> expiredList = reservationMapper.selectList(
+                new LambdaQueryWrapper<Reservation>()
+                        .eq(Reservation::getStatus, 1)
+                        .lt(Reservation::getEndTime, cutoff)
+        );
+        if (expiredList.isEmpty()) return;
+        int count = 0;
+        for (Reservation r : expiredList) {
+            try {
+                expireOne(r);
+                count++;
+            } catch (Exception e) {
+                log.error("Failed to expire reservation {}: {}", r.getId(), e.getMessage());
             }
-            log.info("Expired {} reservation(s) at {}", expiredList.size(), LocalDateTime.now());
-        } catch (Exception e) {
-            log.error("Failed to expire reservations: {}", e.getMessage(), e);
+        }
+        if (count > 0) {
+            log.info("Expired {} reservation(s) at {}", count, LocalDateTime.now());
+        }
+    }
+
+    private void expireOne(Reservation r) {
+        r.setStatus(4); // expired
+        reservationMapper.updateById(r);
+        ParkingSpot spot = parkingSpotMapper.selectById(r.getSpotId());
+        if (spot != null && spot.getStatus() == 2) {
+            spot.setStatus(0); // back to vacant
+            parkingSpotMapper.updateById(spot);
         }
     }
 }

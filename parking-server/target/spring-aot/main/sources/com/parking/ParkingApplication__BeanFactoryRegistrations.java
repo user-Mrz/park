@@ -506,8 +506,8 @@ public class ParkingApplication__BeanFactoryRegistrations {
     beanFactory.registerBeanDefinition("com.github.xiaoymin.knife4j.spring.configuration.Knife4jAutoConfiguration", Knife4jAutoConfiguration__BeanDefinitions.getKnifejAutoConfigurationBeanDefinition());
     beanFactory.registerBeanDefinition("knife4jOpenApiCustomizer", Knife4jAutoConfiguration__BeanDefinitions.getKnifejOpenApiCustomizerBeanDefinition());
     beanFactory.registerBeanDefinition("knife4jJakartaOperationCustomizer", Knife4jAutoConfiguration__BeanDefinitions.getKnifejJakartaOperationCustomizerBeanDefinition());
-    beanFactory.registerBeanDefinition("knife4j.basic-com.github.xiaoymin.knife4j.spring.configuration.Knife4jHttpBasic", Knife4jHttpBasic__BeanDefinitions.getKnifejHttpBasicBeanDefinition());
     beanFactory.registerBeanDefinition("knife4j.setting-com.github.xiaoymin.knife4j.spring.configuration.Knife4jSetting", Knife4jSetting__BeanDefinitions.getKnifejSettingBeanDefinition());
+    beanFactory.registerBeanDefinition("knife4j.basic-com.github.xiaoymin.knife4j.spring.configuration.Knife4jHttpBasic", Knife4jHttpBasic__BeanDefinitions.getKnifejHttpBasicBeanDefinition());
     beanFactory.registerBeanDefinition("knife4j-com.github.xiaoymin.knife4j.spring.configuration.Knife4jProperties", Knife4jProperties__BeanDefinitions.getKnifejPropertiesBeanDefinition());
     beanFactory.registerBeanDefinition("org.springdoc.core.configuration.SpringDocConfiguration$QuerydslProvider", SpringDocConfiguration__BeanDefinitions.QuerydslProvider.getQuerydslProviderBeanDefinition());
     beanFactory.registerBeanDefinition("queryDslQuerydslPredicateOperationCustomizer", SpringDocConfiguration__BeanDefinitions.QuerydslProvider.getQueryDslQuerydslPredicateOperationCustomizerBeanDefinition());

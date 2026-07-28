@@ -117,7 +117,6 @@ async function loadSpots() {
   errorMsg.value = ''
   try {
     const res = await get('/spot/list', { page: 1, pageSize: 100 })
-    // Show vacant (status 0) spots only for new reservations
     spotList.value = (res.data.records || []).filter(s => s.status === 0)
     if (spotList.value.length === 0) {
       errorMsg.value = '暂无可预约车位'

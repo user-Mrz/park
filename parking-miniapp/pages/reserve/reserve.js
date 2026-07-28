@@ -54,7 +54,6 @@ Page({
       header: { 'Authorization': 'Bearer ' + token },
       success: (res) => {
         if (res.data && res.data.code === 200) {
-          // Show vacant (0) and reserved (2) spots; both can be reserved
           const spots = (res.data.data.records || []).filter(s => s.status === 0)
           this.setData({ spots, loading: false })
           if (spots.length === 0) {

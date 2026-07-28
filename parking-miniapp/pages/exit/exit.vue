@@ -32,11 +32,12 @@ const currentRecord = ref(null)
 const userInfo = ref(null)
 const submitting = ref(false)
 
-// iOS 兼容的日期解析：用构造函数代替字符串解析
+// iOS 兼容的日期解析，兼容空格和 T 分隔符
 function parseDateTime(str) {
   if (!str) return new Date()
-  const parts = str.split(' ')[0].split('-')
-  const times = (str.split(' ')[1] || '00:00:00').split(':')
+  const s = str.replace('T', ' ')
+  const parts = s.split(' ')[0].split('-')
+  const times = (s.split(' ')[1] || '00:00:00').split(':')
   return new Date(+parts[0], +parts[1] - 1, +parts[2], +times[0], +times[1], +times[2] || 0)
 }
 

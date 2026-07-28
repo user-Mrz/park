@@ -22,6 +22,7 @@ export function getSpots(params: any) { return request.get('/admin/spots', { par
 export function addSpot(data: any) { return request.post('/admin/spot', data) }
 export function updateSpot(id: number, data: any) { return request.put(`/admin/spot/${id}`, data) }
 export function updateSpotStatus(id: number, status: number) { return request.put(`/admin/spot/${id}/status?status=${status}`) }
+export function getSpotMap() { return request.get('/admin/spot-map') }
 
 // Recharge & Payment Records
 export function getRechargeRecords(params: any) { return request.get('/admin/recharge-records', { params }) }

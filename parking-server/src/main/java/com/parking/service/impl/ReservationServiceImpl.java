@@ -38,14 +38,15 @@ public class ReservationServiceImpl implements ReservationService {
         if (dto.getEndTime().isBefore(dto.getStartTime())) {
             throw new BusinessException("End time must be after start time");
         }
-        long hours = Duration.between(dto.getStartTime(), dto.getEndTime()).toMinutes();
-        if (hours < 60) throw new BusinessException("Minimum reservation is 1 hour");
+        long minutes = Duration.between(dto.getStartTime(), dto.getEndTime()).toMinutes();
+        if (minutes < 60) throw new BusinessException("Minimum reservation is 1 hour");
+        long hours = minutes / 60;
         long days = hours / 24;
         if (days > 30) throw new BusinessException("Maximum reservation is 30 days");
         ParkingSpot spot = parkingSpotMapper.selectById(dto.getSpotId());
         if (spot == null) throw new BusinessException("Parking spot not found");
         if (spot.getStatus() != 0) throw new BusinessException("Parking spot is not available");
-        BigDecimal durationHours = BigDecimal.valueOf(hours).divide(BigDecimal.valueOf(60), 1, RoundingMode.HALF_UP);
+        BigDecimal durationHours = BigDecimal.valueOf(minutes).divide(BigDecimal.valueOf(60), 1, RoundingMode.HALF_UP);
         BigDecimal totalAmount = spot.getPricePerHour().multiply(durationHours);
         Snowflake sf = IdUtil.getSnowflake(1, 3);
         Reservation reservation = new Reservation();

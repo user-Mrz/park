@@ -8,7 +8,7 @@
 
       <view class="amount-title">选择充值金额</view>
       <view class="amount-grid">
-        <view class="amount-item" v-for="a in presetAmounts" :key="a" :class="{ active: amount === a }" @click="amount = a">
+        <view class="amount-item" v-for="a in presetAmounts" :key="a" :class="{ active: amount === a && !customAmount }" @click="selectAmount(a)">
           ¥{{ a }}
         </view>
       </view>
@@ -39,6 +39,11 @@ const finalAmount = computed(() => {
   if (customAmount.value && Number(customAmount.value) > 0) return Number(customAmount.value)
   return amount.value
 })
+
+function selectAmount(val) {
+  amount.value = val
+  customAmount.value = ''
+}
 
 async function loadUser() {
   try { const res = await get('/user/info'); userInfo.value = res.data } catch (e) {}

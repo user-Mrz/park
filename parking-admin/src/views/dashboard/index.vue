@@ -49,12 +49,20 @@
         </el-card>
       </el-col>
     </el-row>
+    <el-row :gutter="20" style="margin-top: 20px">
+      <el-col :span="24">
+        <el-card shadow="hover" style="height: 450px">
+          <SpotMap />
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { getDashboard } from '@/api'
+import SpotMap from '@/components/SpotMap.vue'
 
 const dashboard = reactive<any>({})
 const cards = ref([
@@ -82,6 +90,6 @@ onMounted(async () => {
 .overview-item { text-align: center; }
 .overview-label { display: block; color: #909399; font-size: 14px; margin-bottom: 8px; }
 .overview-value { display: block; font-size: 24px; font-weight: bold; color: #303133; }
-.quick-actions { display: flex; flex-direction: column; gap: 12px; }
-.quick-actions .el-button { width: 100%; }
+.quick-actions { display: flex; flex-direction: column; gap: 12px; padding: 0 4px; }
+.quick-actions .el-button { width: 100%; display: flex; justify-content: center; }
 </style>

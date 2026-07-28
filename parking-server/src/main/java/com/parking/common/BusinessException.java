@@ -13,6 +13,6 @@ public class BusinessException extends RuntimeException {
 
     public BusinessException(String message) {
         super(message);
-        this.code = 500;
+        this.code = 400;
     }
 }

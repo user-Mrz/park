@@ -1,5 +1,17 @@
 <view class="container">
-  <view class="form-card">
+  <!-- 加载中 -->
+  <view class="status-box" wx:if="{{loading}}">
+    <view class="loading-text">加载车位中...</view>
+  </view>
+
+  <!-- 错误提示 -->
+  <view class="status-box error" wx:elif="{{errorMsg}}">
+    <view class="error-text">{{errorMsg}}</view>
+    <button class="retry-btn" bindtap="loadSpots">点击重试</button>
+  </view>
+
+  <!-- 正常表单 -->
+  <view class="form-card" wx:else>
     <view class="form-title">选择车位</view>
     <picker mode="selector" range="{{spots}}" range-key="spotCode" bindchange="onSpotChange">
       <view class="picker-view">{{selectedSpot ? selectedSpot.spotCode + ' - ¥' + selectedSpot.pricePerHour + '/h' : '请选择车位'}}</view>

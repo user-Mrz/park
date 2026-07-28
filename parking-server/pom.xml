@@ -142,6 +142,25 @@
                     </excludes>
                 </configuration>
             </plugin>
+            <!-- 跳过可能从外部注入的 GraalVM 原生镜像插件（所有goal） -->
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>native-test</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>default</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>build-native</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

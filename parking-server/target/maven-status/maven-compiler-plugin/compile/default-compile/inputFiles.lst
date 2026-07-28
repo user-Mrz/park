@@ -20,6 +20,7 @@ C:\Users\45091\Desktop\毕业设计\parking-system\parking-server\src\main\java\
 C:\Users\45091\Desktop\毕业设计\parking-system\parking-server\src\main\java\com\parking\dto\RechargeDTO.java
 C:\Users\45091\Desktop\毕业设计\parking-system\parking-server\src\main\java\com\parking\dto\RegisterDTO.java
 C:\Users\45091\Desktop\毕业设计\parking-system\parking-server\src\main\java\com\parking\dto\ReservationDTO.java
+C:\Users\45091\Desktop\毕业设计\parking-system\parking-server\src\main\java\com\parking\dto\SpotOverviewDTO.java
 C:\Users\45091\Desktop\毕业设计\parking-system\parking-server\src\main\java\com\parking\dto\UpdateUserDTO.java
 C:\Users\45091\Desktop\毕业设计\parking-system\parking-server\src\main\java\com\parking\dto\VehicleEnterDTO.java
 C:\Users\45091\Desktop\毕业设计\parking-system\parking-server\src\main\java\com\parking\dto\WechatLoginDTO.java
@@ -51,6 +52,7 @@ C:\Users\45091\Desktop\毕业设计\parking-system\parking-server\src\main\java\
 C:\Users\45091\Desktop\毕业设计\parking-system\parking-server\src\main\java\com\parking\service\impl\UserServiceImpl.java
 C:\Users\45091\Desktop\毕业设计\parking-system\parking-server\src\main\java\com\parking\service\impl\VehicleServiceImpl.java
 C:\Users\45091\Desktop\毕业设计\parking-system\parking-server\src\main\java\com\parking\service\ReservationService.java
+C:\Users\45091\Desktop\毕业设计\parking-system\parking-server\src\main\java\com\parking\service\ScheduledTaskService.java
 C:\Users\45091\Desktop\毕业设计\parking-system\parking-server\src\main\java\com\parking\service\SpotService.java
 C:\Users\45091\Desktop\毕业设计\parking-system\parking-server\src\main\java\com\parking\service\UserService.java
 C:\Users\45091\Desktop\毕业设计\parking-system\parking-server\src\main\java\com\parking\service\VehicleService.java

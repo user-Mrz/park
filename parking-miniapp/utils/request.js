@@ -1,9 +1,9 @@
-const BASE_URL = 'http://localhost:8080/api'
+const BASE_URL = 'http://192.168.2.247:8080/api'
 
 function request(options) {
   return new Promise((resolve, reject) => {
-    const token = uni.getStorageSync('token')
-    uni.request({
+    const token = wx.getStorageSync('token')
+    wx.request({
       url: BASE_URL + options.url,
       method: options.method || 'GET',
       data: options.data || {},
@@ -15,17 +15,17 @@ function request(options) {
         if (res.data.code === 200) {
           resolve(res.data)
         } else if (res.data.code === 401) {
-          uni.removeStorageSync('token')
-          uni.showToast({ title: 'Please login', icon: 'none' })
-          uni.reLaunch({ url: '/pages/login/login' })
+          wx.removeStorageSync('token')
+          wx.showToast({ title: '请登录', icon: 'none' })
+          wx.reLaunch({ url: '/pages/login/login' })
           reject(res.data)
         } else {
-          uni.showToast({ title: res.data.message || 'Error', icon: 'none' })
+          wx.showToast({ title: res.data.message || '错误', icon: 'none' })
           reject(res.data)
         }
       },
       fail(err) {
-        uni.showToast({ title: 'Network error', icon: 'none' })
+        wx.showToast({ title: '网络错误', icon: 'none' })
         reject(err)
       }
     })

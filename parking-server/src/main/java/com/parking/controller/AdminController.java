@@ -130,6 +130,13 @@ public class AdminController {
         return R.ok();
     }
 
+    // --- Spot Map ---
+    @Operation(summary = "Get spot status map")
+    @GetMapping("/spot-map")
+    public R<?> spotMap() {
+        return R.ok(adminService.getSpotMap());
+    }
+
     // --- System Config ---
     @Operation(summary = "Get system config")
     @GetMapping("/config")

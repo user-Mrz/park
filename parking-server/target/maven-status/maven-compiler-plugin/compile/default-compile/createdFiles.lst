@@ -1,15 +1,19 @@
+com\parking\dto\SpotOverviewDTO.class
 com\parking\common\ResultCode.class
 com\parking\controller\AuthController.class
 com\parking\util\JwtUtil.class
 com\parking\mapper\SystemConfigMapper.class
 com\parking\config\SecurityConfig.class
 com\parking\service\impl\CaptchaServiceImpl.class
+com\parking\service\ScheduledTaskService.class
 com\parking\dto\RegisterDTO.class
 com\parking\entity\VehicleRecord.class
 com\parking\service\CaptchaService.class
 com\parking\controller\VehicleController.class
 com\parking\entity\ParkingSpot.class
 com\parking\controller\AdminController.class
+com\parking\dto\SpotOverviewDTO$SpotInfo.class
+com\parking\dto\SpotOverviewDTO$ParkedVehicle.class
 com\parking\service\impl\SpotServiceImpl.class
 com\parking\config\RedisConfig.class
 com\parking\service\AdminService.class
@@ -38,6 +42,7 @@ com\parking\service\UserService.class
 com\parking\dto\PageDTO.class
 com\parking\service\impl\AuthServiceImpl.class
 com\parking\controller\SpotController.class
+com\parking\dto\SpotOverviewDTO$ActiveReservation.class
 com\parking\entity\Admin.class
 com\parking\controller\ReservationController.class
 com\parking\mapper\ParkingSpotMapper.class
@@ -53,5 +58,6 @@ com\parking\common\R.class
 com\parking\common\BusinessException.class
 com\parking\mapper\ReservationMapper.class
 com\parking\service\AuthService.class
+com\parking\dto\SpotOverviewDTO$AreaGroup.class
 com\parking\service\impl\UserServiceImpl.class
 com\parking\common\GlobalExceptionHandler.class

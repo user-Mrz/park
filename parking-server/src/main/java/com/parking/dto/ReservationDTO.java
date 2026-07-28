@@ -1,5 +1,6 @@
 package com.parking.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -11,8 +12,10 @@ public class ReservationDTO {
     private Long spotId;
 
     @NotNull(message = "Start time is required")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private LocalDateTime startTime;
 
     @NotNull(message = "End time is required")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private LocalDateTime endTime;
 }

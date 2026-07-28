@@ -7,26 +7,28 @@
     <!-- Phone Login -->
     <block wx:if="{{loginType === 'phone'}}">
       <view class="input-group"><input class="input" value="{{phone}}" type="number" maxlength="11" placeholder="请输入手机号" bindinput="onInput" data-field="phone"/></view>
-      <view class="input-group"><input class="input" value="{{password}}" type="password" placeholder="密码" bindinput="onInput" data-field="password"/></view>
+      <view class="input-group"><input class="input" value="{{password}}" password maxlength="20" placeholder="请输入密码" bindinput="onInput" data-field="password"/></view>
       <view class="captcha-row">
         <input class="input captcha-input" value="{{captchaCode}}" placeholder="验证码" bindinput="onInput" data-field="captchaCode"/>
         <image wx:if="{{captchaImg}}" src="{{captchaImg}}" class="captcha-img" bindtap="loadCaptcha"/>
+        <view wx:else class="captcha-placeholder" bindtap="loadCaptcha">点击获取</view>
       </view>
-      <button class="login-btn" bindtap="handleLogin" loading="{{loading}}">登录</button>
+      <button class="login-btn" bindtap="handleLogin">登 录</button>
       <view class="switch-row"><text>没有账号？</text><text class="link" bindtap="switchType" data-type="register">立即注册</text></view>
     </block>
 
     <!-- Register -->
     <block wx:if="{{loginType === 'register'}}">
       <view class="input-group"><input class="input" value="{{phone}}" type="number" maxlength="11" placeholder="手机号" bindinput="onInput" data-field="phone"/></view>
-      <view class="input-group"><input class="input" value="{{password}}" type="password" placeholder="密码" bindinput="onInput" data-field="password"/></view>
+      <view class="input-group"><input class="input" value="{{password}}" password maxlength="20" placeholder="密码（至少6位）" bindinput="onInput" data-field="password"/></view>
       <view class="input-group"><input class="input" value="{{nickname}}" placeholder="昵称（选填）" bindinput="onInput" data-field="nickname"/></view>
       <view class="input-group"><input class="input" value="{{plateNumber}}" placeholder="车牌号（选填）" bindinput="onInput" data-field="plateNumber"/></view>
       <view class="captcha-row">
         <input class="input captcha-input" value="{{captchaCode}}" placeholder="验证码" bindinput="onInput" data-field="captchaCode"/>
         <image wx:if="{{captchaImg}}" src="{{captchaImg}}" class="captcha-img" bindtap="loadCaptcha"/>
+        <view wx:else class="captcha-placeholder" bindtap="loadCaptcha">点击获取</view>
       </view>
-      <button class="login-btn" bindtap="handleRegister" loading="{{loading}}">注册</button>
+      <button class="login-btn" bindtap="handleRegister">注 册</button>
       <view class="switch-row"><text>已有账号？</text><text class="link" bindtap="switchType" data-type="phone">去登录</text></view>
     </block>
 

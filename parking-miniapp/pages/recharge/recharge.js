@@ -20,7 +20,11 @@ Page({
       url: app.globalData.baseUrl + '/user/info',
       header: { 'Authorization': 'Bearer ' + token },
       success: (res) => {
-        if (res.data.code === 200) this.setData({ userInfo: res.data.data })
+        if (res.data.code === 200) {
+          const info = res.data.data
+          this.setData({ userInfo: info })
+          wx.setStorageSync('userInfo', JSON.stringify(info))
+        }
       }
     })
   },

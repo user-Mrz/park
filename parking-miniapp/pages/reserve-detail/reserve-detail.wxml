@@ -1,0 +1,64 @@
+<view class="container">
+  <!-- 加载中 -->
+  <view class="status-box" wx:if="{{loading}}">
+    <view class="loading-text">加载中...</view>
+  </view>
+
+  <!-- 预约不存在 -->
+  <view class="status-box error" wx:elif="{{!reservation}}">
+    <view class="error-text">预约不存在或已失效</view>
+    <button class="back-btn" bindtap="goBack">返回首页</button>
+  </view>
+
+  <!-- 预约详情 -->
+  <view wx:else>
+    <!-- 顶部状态卡片 -->
+    <view class="status-card status-bg-{{reservation.status}}">
+      <view class="status-icon">{{statusIcon}}</view>
+      <view class="status-label">{{statusLabel}}</view>
+      <view class="status-hint" wx:if="{{reservation.status === 1}}">请在预约时间内到达停车场</view>
+      <view class="status-hint" wx:elif="{{reservation.status === 3 || reservation.status === 4}}">此预约已失效</view>
+      <view class="status-hint" wx:elif="{{reservation.status === 2}}">预约已完成，感谢使用</view>
+    </view>
+
+    <!-- 预约信息 -->
+    <view class="info-card">
+      <view class="card-title">预约信息</view>
+      <view class="info-row">
+        <text class="info-label">预约编号</text>
+        <text class="info-value">{{reservation.reservationNo}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">预约车位</text>
+        <text class="info-value">#{{reservation.spotId}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">开始时间</text>
+        <text class="info-value">{{reservation.startTime}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">结束时间</text>
+        <text class="info-value">{{reservation.endTime}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">预约时长</text>
+        <text class="info-value">{{reservation.durationHours}}小时</text>
+      </view>
+      <view class="info-row fee-row">
+        <text class="info-label">预约金额</text>
+        <text class="info-value fee">¥{{reservation.totalAmount}}</text>
+      </view>
+    </view>
+
+    <!-- 操作按钮（仅进行中的预约显示） -->
+    <view class="actions" wx:if="{{reservation.status === 1}}">
+      <button class="action-btn enter-btn" bindtap="handleEnter" loading="{{entering}}">🚗 车辆到场</button>
+      <button class="action-btn cancel-btn" bindtap="handleCancel" loading="{{cancelling}}">❌ 取消预约</button>
+    </view>
+
+    <!-- 底部提示 -->
+    <view class="footnote" wx:if="{{reservation.status === 1}}">
+      <text>车辆到场后将自动完成预约并开始计费</text>
+    </view>
+  </view>
+</view>

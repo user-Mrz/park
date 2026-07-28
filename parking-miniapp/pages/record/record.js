@@ -8,6 +8,13 @@ Page({
     paymentRecords: []
   },
 
+  onLoad(options) {
+    if (options && options.tab) {
+      var t = parseInt(options.tab)
+      if (t >= 0 && t <= 2) this.setData({ tab: t })
+    }
+  },
+
   onShow() {
     this.loadData()
   },

@@ -59,6 +59,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public BigDecimal getTotalUserBalance() {
+        return userMapper.sumActiveUserBalance();
+    }
+
+    @Override
     public Page<Reservation> getAllReservations(int page, int pageSize, Integer status) {
         LambdaQueryWrapper<Reservation> wrapper = new LambdaQueryWrapper<>();
         if (status != null) wrapper.eq(Reservation::getStatus, status);
@@ -117,19 +122,22 @@ public class AdminServiceImpl implements AdminService {
         User user = userMapper.selectById(record.getUserId());
         if (user != null && user.getBalance().compareTo(record.getTotalFee()) >= 0) {
             BigDecimal before = user.getBalance();
-            user.setBalance(before.subtract(record.getTotalFee()));
-            userMapper.updateById(user);
-            record.setPaymentStatus(1);
-            Snowflake sf = IdUtil.getSnowflake(1, 5);
-            PaymentRecord payment = new PaymentRecord();
-            payment.setId(sf.nextId());
-            payment.setUserId(user.getId());
-            payment.setVehicleRecordId(id);
-            payment.setAmount(record.getTotalFee());
-            payment.setBalanceBefore(before);
-            payment.setBalanceAfter(user.getBalance());
-            payment.setType("admin_force");
-            paymentRecordMapper.insert(payment);
+            int rows = userMapper.deductBalance(record.getUserId(), record.getTotalFee());
+            if (rows > 0) {
+                record.setPaymentStatus(1);
+                Snowflake sf = IdUtil.getSnowflake(1, 5);
+                PaymentRecord payment = new PaymentRecord();
+                payment.setId(sf.nextId());
+                payment.setUserId(user.getId());
+                payment.setVehicleRecordId(id);
+                payment.setAmount(record.getTotalFee());
+                payment.setBalanceBefore(before);
+                payment.setBalanceAfter(userMapper.selectById(record.getUserId()).getBalance());
+                payment.setType("admin_force");
+                paymentRecordMapper.insert(payment);
+            } else {
+                record.setPaymentStatus(0);
+            }
         } else {
             record.setPaymentStatus(0);
         }
@@ -211,6 +219,7 @@ public class AdminServiceImpl implements AdminService {
     public Map<String, Object> getDashboard() {
         Map<String, Object> data = new HashMap<>();
         data.put("totalUsers", userMapper.selectCount(null));
+        data.put("totalUserBalance", userMapper.sumActiveUserBalance());
         data.put("totalSpots", parkingSpotMapper.selectCount(null));
         data.put("availableSpots", parkingSpotMapper.selectCount(
                 new LambdaQueryWrapper<ParkingSpot>().eq(ParkingSpot::getStatus, 0)));
@@ -222,5 +231,63 @@ public class AdminServiceImpl implements AdminService {
                 new LambdaQueryWrapper<PaymentRecord>().ge(PaymentRecord::getCreatedAt, LocalDateTime.now().toLocalDate()))
                 .stream().map(PaymentRecord::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
         return data;
+    }
+
+    @Override
+    public Map<String, Object> getSpotMap() {
+        Map<String, Object> result = new HashMap<>();
+        
+        List<ParkingSpot> allSpots = parkingSpotMapper.selectList(null);
+        Set<Long> occupiedSpotIds = vehicleRecordMapper.selectList(
+                new LambdaQueryWrapper<VehicleRecord>().eq(VehicleRecord::getStatus, 0))
+                .stream().map(VehicleRecord::getSpotId).collect(java.util.stream.Collectors.toSet());
+        Set<Long> reservedSpotIds = reservationMapper.selectList(
+                new LambdaQueryWrapper<Reservation>().eq(Reservation::getStatus, 1))
+                .stream().map(Reservation::getSpotId).collect(java.util.stream.Collectors.toSet());
+
+        List<Map<String, Object>> spots = new ArrayList<>();
+        int vacantCount = 0, occupiedCount = 0, reservedUnparkedCount = 0, reservedParkedCount = 0, maintenanceCount = 0;
+
+        for (ParkingSpot spot : allSpots) {
+            Map<String, Object> spotInfo = new HashMap<>();
+            spotInfo.put("id", spot.getId());
+            spotInfo.put("spotCode", spot.getSpotCode());
+            spotInfo.put("area", spot.getArea());
+            spotInfo.put("floor", spot.getFloor());
+            spotInfo.put("pricePerHour", spot.getPricePerHour());
+
+            int displayStatus = spot.getStatus();
+            if (spot.getStatus() == 3) {
+                displayStatus = 4;
+                maintenanceCount++;
+            } else if (occupiedSpotIds.contains(spot.getId())) {
+                displayStatus = 1;
+                occupiedCount++;
+                if (reservedSpotIds.contains(spot.getId())) {
+                    displayStatus = 5;
+                    reservedParkedCount++;
+                    occupiedCount--;
+                }
+            } else if (reservedSpotIds.contains(spot.getId())) {
+                displayStatus = 2;
+                reservedUnparkedCount++;
+            } else if (spot.getStatus() == 0) {
+                displayStatus = 0;
+                vacantCount++;
+            }
+
+            spotInfo.put("displayStatus", displayStatus);
+            spots.add(spotInfo);
+        }
+
+        result.put("spots", spots);
+        result.put("vacantCount", vacantCount);
+        result.put("occupiedCount", occupiedCount);
+        result.put("reservedUnparkedCount", reservedUnparkedCount);
+        result.put("reservedParkedCount", reservedParkedCount);
+        result.put("maintenanceCount", maintenanceCount);
+        result.put("totalCount", allSpots.size());
+
+        return result;
     }
 }

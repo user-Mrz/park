@@ -44,13 +44,26 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import { get } from '@/utils/request'
 
 const tab = ref(0)
 const vehicleRecords = ref([])
 const rechargeRecords = ref([])
 const paymentRecords = ref([])
+
+// 从路由参数读取初始 tab
+{
+  const pages = getCurrentPages()
+  const page = pages[pages.length - 1]
+  const opts = page.$page?.options || page.options || {}
+  if (opts.tab) {
+    const t = parseInt(opts.tab)
+    if (t >= 0 && t <= 2) tab.value = t
+  }
+}
+// 首次加载
+loadTabData()
 
 async function loadVehicleRecords() {
   try {
@@ -73,13 +86,13 @@ async function loadPaymentRecords() {
   } catch (e) {}
 }
 
-watch(tab, (v) => {
-  if (v === 0) loadVehicleRecords()
-  else if (v === 1) loadRechargeRecords()
+function loadTabData() {
+  if (tab.value === 0) loadVehicleRecords()
+  else if (tab.value === 1) loadRechargeRecords()
   else loadPaymentRecords()
-})
+}
 
-onMounted(() => { loadVehicleRecords() })
+watch(tab, loadTabData)
 </script>
 
 <style scoped>

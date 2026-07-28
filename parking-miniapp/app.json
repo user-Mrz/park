@@ -3,6 +3,7 @@
     "pages/index/index",
     "pages/login/login",
     "pages/reserve/reserve",
+    "pages/reserve-detail/reserve-detail",
     "pages/enter/enter",
     "pages/exit/exit",
     "pages/mine/mine",

@@ -10,6 +10,7 @@ public interface AdminService {
     Page<User> getUsers(int page, int pageSize, String keyword, Integer status);
     User getUserById(Long id);
     void updateUserStatus(Long id, Integer status);
+    java.math.BigDecimal getTotalUserBalance();
     // Reservation management
     Page<Reservation> getAllReservations(int page, int pageSize, Integer status);
     void updateReservationStatus(Long id, Integer status);
@@ -31,4 +32,6 @@ public interface AdminService {
     void updateConfig(Map<String, String> configs);
     // Dashboard
     Map<String, Object> getDashboard();
+    // Spot Map
+    Map<String, Object> getSpotMap();
 }

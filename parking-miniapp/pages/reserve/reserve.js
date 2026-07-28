@@ -17,7 +17,9 @@ Page({
     ],
     endTime: '',
     totalFee: 0,
-    submitting: false
+    submitting: false,
+    loading: false,
+    errorMsg: ''
   },
 
   onLoad() {
@@ -32,17 +34,41 @@ Page({
     this.loadSpots()
   },
 
-  async loadSpots() {
+  loadSpots() {
     const token = wx.getStorageSync('token')
-    if (!token) return
+    if (!token) {
+      this.setData({ errorMsg: '请先登录', loading: false })
+      wx.showModal({
+        title: '提示',
+        content: '请先登录后再预约车位',
+        confirmText: '去登录',
+        success(res) {
+          if (res.confirm) wx.navigateTo({ url: '/pages/login/login' })
+        }
+      })
+      return
+    }
+    this.setData({ loading: true, errorMsg: '' })
     wx.request({
       url: app.globalData.baseUrl + '/spot/list?page=1&pageSize=100',
       header: { 'Authorization': 'Bearer ' + token },
       success: (res) => {
-        if (res.data.code === 200) {
+        if (res.data && res.data.code === 200) {
+          // Show vacant (0) and reserved (2) spots; both can be reserved
           const spots = (res.data.data.records || []).filter(s => s.status === 0)
-          this.setData({ spots })
+          this.setData({ spots, loading: false })
+          if (spots.length === 0) {
+            this.setData({ errorMsg: '暂无可预约车位' })
+          }
+        } else {
+          const msg = (res.data && res.data.message) || '加载车位失败'
+          this.setData({ errorMsg: msg, loading: false })
+          wx.showToast({ title: msg, icon: 'none' })
         }
+      },
+      fail: (err) => {
+        this.setData({ loading: false, errorMsg: '网络异常，请检查网络连接' })
+        wx.showToast({ title: '网络异常，请检查网络连接', icon: 'none', duration: 2000 })
       }
     })
   },
@@ -57,7 +83,7 @@ Page({
     this.calcFee()
   },
   onTimeChange(e) {
-    this.setData({ startTime: e.detail.value + ':00' })
+    this.setData({ startTime: e.detail.value })
     this.calcFee()
   },
   onDurationChange(e) {
@@ -67,21 +93,30 @@ Page({
 
   calcFee() {
     const { selectedSpot, startDate, startTime, durations, durationIndex } = this.data
-    if (!selectedSpot || !startDate) return
+    if (!selectedSpot || !startDate || !startTime) return
     const dur = durations[durationIndex]
-    const start = new Date((startDate + 'T' + startTime).replace(/-/g, '/')).getTime()
+    // 用构造函数避免 iOS 日期字符串解析兼容问题
+    const dateParts = startDate.split('-')
+    const timeParts = startTime.split(':')
+    const start = new Date(+dateParts[0], +dateParts[1] - 1, +dateParts[2], +timeParts[0], +timeParts[1], 0).getTime()
     const end = new Date(start + dur.value * 3600000)
-    const endStr = `${end.getFullYear()}-${String(end.getMonth()+1).padStart(2,'0')}-${String(end.getDate()).padStart(2,'0')} ${String(end.getHours()).padStart(2,'0')}:00`
+    const pad = (n) => String(n).padStart(2, '0')
+    const endStr = `${end.getFullYear()}-${pad(end.getMonth()+1)}-${pad(end.getDate())} ${pad(end.getHours())}:${pad(end.getMinutes())}:00`
     this.setData({ endTime: endStr, totalFee: (selectedSpot.pricePerHour * dur.value).toFixed(2) })
   },
 
-  async handleReserve() {
+  handleReserve() {
     const { selectedSpot, startDate, startTime, endTime, durations, durationIndex } = this.data
     if (!selectedSpot) { wx.showToast({ title: '请选择车位', icon: 'none' }); return }
-    this.setData({ submitting: true })
+    if (!endTime) { wx.showToast({ title: '请选择预约时长', icon: 'none' }); return }
     const token = wx.getStorageSync('token')
+    if (!token) {
+      wx.showToast({ title: '请先登录', icon: 'none' })
+      return
+    }
+    this.setData({ submitting: true })
     const dur = durations[durationIndex]
-    const startDt = startDate + ' ' + startTime
+    const startDt = startDate + ' ' + startTime + ':00'
     wx.request({
       url: app.globalData.baseUrl + '/reservation/create',
       method: 'POST',
@@ -98,6 +133,9 @@ Page({
         } else {
           wx.showToast({ title: res.data.message, icon: 'none' })
         }
+      },
+      fail: () => {
+        wx.showToast({ title: '网络异常，请重试', icon: 'none' })
       },
       complete: () => this.setData({ submitting: false })
     })

@@ -1,3 +1,5 @@
+const app = getApp()
+
 Page({
   data: {
     isLoggedIn: false,
@@ -5,16 +7,40 @@ Page({
   },
 
   onShow() {
-    const token = wx.getStorageSync('token')
-    const stored = wx.getStorageSync('userInfo')
-    if (token && stored) {
-      this.setData({ isLoggedIn: true, userInfo: JSON.parse(stored) })
-    } else {
-      this.setData({ isLoggedIn: false, userInfo: null })
-    }
+    this.loadUserInfo()
   },
 
-  goPage(url) {
+  loadUserInfo() {
+    const token = wx.getStorageSync('token')
+    if (!token) {
+      this.setData({ isLoggedIn: false, userInfo: null })
+      return
+    }
+    // 从后端获取最新余额，不用 localStorage 缓存
+    wx.request({
+      url: app.globalData.baseUrl + '/user/info',
+      header: { 'Authorization': 'Bearer ' + token },
+      success: (res) => {
+        if (res.data.code === 200) {
+          const info = res.data.data
+          this.setData({ isLoggedIn: true, userInfo: info })
+          // 同步缓存
+          wx.setStorageSync('userInfo', JSON.stringify(info))
+        }
+      },
+      fail: () => {
+        // 网络失败时降级用缓存
+        const stored = wx.getStorageSync('userInfo')
+        if (stored) {
+          this.setData({ isLoggedIn: true, userInfo: JSON.parse(stored) })
+        }
+      }
+    })
+  },
+
+  goPage(e) {
+    const url = e.currentTarget.dataset.url
+    if (!url) return
     const token = wx.getStorageSync('token')
     if (!token && url !== '/pages/login/login') {
       wx.navigateTo({ url: '/pages/login/login' })

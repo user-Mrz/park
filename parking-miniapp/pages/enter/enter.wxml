@@ -4,6 +4,12 @@
     <view class="title">车辆入场</view>
     <view class="desc">确认进入停车场</view>
 
+    <!-- 活动预约提示 -->
+    <view class="reservation-hint" wx:if="{{activeReservation}}">
+      <text>📌 您有活动预约：{{activeReservation.reservationNo}}</text>
+      <text class="hint-sub">预约车位 {{activeReservation.spotId}}，系统将自动关联</text>
+    </view>
+
     <view class="form-item">
       <text class="label">选择车位</text>
       <picker mode="selector" range="{{spots}}" range-key="spotCode" bindchange="onSpotChange">

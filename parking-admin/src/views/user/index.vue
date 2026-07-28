@@ -105,7 +105,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from 'vue'
-import { getUsers, getUserDetail, updateUserStatus } from '@/api'
+import { getUsers, getUserDetail, updateUserStatus, getDashboard } from '@/api'
 import { Search } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
@@ -137,17 +137,18 @@ async function loadData() {
     tableData.value = res.data.records
     total.value = res.data.total
 
-    // 加载统计数据
+    // 加载统计数据（用户数从分页接口total获取，余额从dashboard获取）
     const allRes: any = await getUsers({ page: 1, pageSize: 1 })
     stats.totalUsers = allRes.data.total
     const activeRes: any = await getUsers({ page: 1, pageSize: 1, status: 1 })
     stats.activeUsers = activeRes.data.total
     const disabledRes: any = await getUsers({ page: 1, pageSize: 1, status: 0 })
     stats.disabledUsers = disabledRes.data.total
-    // 余额从当前列表粗略汇总
-    let sum = 0
-    tableData.value.forEach((u: any) => { sum += Number(u.balance || 0) })
-    stats.totalBalance = sum.toFixed(2)
+    // 余额从后端dashboard聚合获取（全量数据）
+    try {
+      const dashRes: any = await getDashboard()
+      stats.totalBalance = (Number(dashRes.data.totalUserBalance) || 0).toFixed(2)
+    } catch { /* fallback */ }
   } finally { loading.value = false }
 }
 

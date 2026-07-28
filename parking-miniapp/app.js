@@ -10,6 +10,6 @@ App({
   globalData: {
     userInfo: null,
     token: null,
-    baseUrl: 'http://localhost:8080/api'
+    baseUrl: 'http://192.168.2.247:8080/api'
   }
 })

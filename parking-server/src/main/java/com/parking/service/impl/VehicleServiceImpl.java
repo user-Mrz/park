@@ -26,6 +26,7 @@ public class VehicleServiceImpl implements VehicleService {
     private final UserMapper userMapper;
     private final PaymentRecordMapper paymentRecordMapper;
     private final SystemConfigMapper systemConfigMapper;
+    private final ReservationMapper reservationMapper;
 
     @Override
     @Transactional
@@ -38,6 +39,19 @@ public class VehicleServiceImpl implements VehicleService {
         if (count > 0) throw new BusinessException("You already have a vehicle parked");
         ParkingSpot spot = parkingSpotMapper.selectById(dto.getSpotId());
         if (spot == null) throw new BusinessException("Parking spot not found");
+        // Validate reservation if provided
+        Reservation reservation = null;
+        if (dto.getReservationId() != null) {
+            reservation = reservationMapper.selectById(dto.getReservationId());
+            if (reservation == null) throw new BusinessException("Reservation not found");
+            if (!reservation.getUserId().equals(userId)) throw new BusinessException("This reservation does not belong to you");
+            if (reservation.getStatus() != 1) throw new BusinessException("Reservation is not active");
+            if (!reservation.getSpotId().equals(dto.getSpotId())) throw new BusinessException("Reserved spot does not match selected spot");
+            // Allow entry even if slightly past endTime (grace period)
+            if (reservation.getEndTime().isBefore(LocalDateTime.now().minusMinutes(15))) {
+                throw new BusinessException("Reservation has expired. Please make a new reservation");
+            }
+        }
         if (spot.getStatus() != 0 && spot.getStatus() != 2) throw new BusinessException("Spot is occupied");
         String plateNumber = dto.getPlateNumber() != null ? dto.getPlateNumber() : user.getPlateNumber();
         if (plateNumber == null || plateNumber.isEmpty()) throw new BusinessException("Please set your license plate first");
@@ -54,6 +68,11 @@ public class VehicleServiceImpl implements VehicleService {
         vehicleRecordMapper.insert(record);
         spot.setStatus(1); // occupied
         parkingSpotMapper.updateById(spot);
+        // Mark reservation as completed if using one
+        if (reservation != null) {
+            reservation.setStatus(2); // completed
+            reservationMapper.updateById(reservation);
+        }
         return record;
     }
 
@@ -80,8 +99,11 @@ public class VehicleServiceImpl implements VehicleService {
             throw new BusinessException("Insufficient balance. Please recharge. Required: " + totalFee + " yuan");
         }
         BigDecimal balanceBefore = user.getBalance();
-        user.setBalance(balanceBefore.subtract(totalFee));
-        userMapper.updateById(user);
+        int rows = userMapper.deductBalance(userId, totalFee);
+        if (rows == 0) {
+            throw new BusinessException("Balance insufficient during deduction");
+        }
+        user = userMapper.selectById(userId);
         record.setPaymentStatus(1); // paid
         record.setStatus(1); // exited
         vehicleRecordMapper.updateById(record);
@@ -106,10 +128,17 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public VehicleRecord getCurrentParking(Long userId) {
-        return vehicleRecordMapper.selectOne(new LambdaQueryWrapper<VehicleRecord>()
+        VehicleRecord record = vehicleRecordMapper.selectOne(new LambdaQueryWrapper<VehicleRecord>()
                 .eq(VehicleRecord::getUserId, userId)
                 .eq(VehicleRecord::getStatus, 0)
                 .orderByDesc(VehicleRecord::getEntryTime)
                 .last("LIMIT 1"));
+        if (record != null) {
+            ParkingSpot spot = parkingSpotMapper.selectById(record.getSpotId());
+            if (spot != null) {
+                record.setSpotPricePerHour(spot.getPricePerHour());
+            }
+        }
+        return record;
     }
 }

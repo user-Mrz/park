@@ -67,10 +67,9 @@ public class UserServiceImpl implements UserService {
         record.setOrderNo("RECH" + System.currentTimeMillis());
         record.setAmount(dto.getAmount());
         record.setPayMethod(dto.getPayMethod() != null ? dto.getPayMethod() : "wechat");
-        record.setStatus(1); // success in demo
+        record.setStatus(1);
         rechargeRecordMapper.insert(record);
-        user.setBalance(user.getBalance().add(dto.getAmount()));
-        userMapper.updateById(user);
+        userMapper.addBalance(userId, dto.getAmount());
         return record;
     }
 

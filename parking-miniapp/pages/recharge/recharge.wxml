@@ -7,7 +7,7 @@
 
     <view class="amount-title">选择充值金额</view>
     <view class="amount-grid">
-      <view class="amount-item {{amount === a && !customAmount ? 'active' : ''}}" wx:for="{{presetAmounts}}" wx:key="*this" bindtap="selectAmount" data-amount="{{item}}">¥{{item}}</view>
+      <view class="amount-item {{amount === item && !customAmount ? 'active' : ''}}" wx:for="{{presetAmounts}}" wx:key="*this" bindtap="selectAmount" data-amount="{{item}}">¥{{item}}</view>
     </view>
 
     <view class="custom-amount">

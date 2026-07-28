@@ -9,18 +9,30 @@
 .action-text { font-size: 26rpx; color: #333; font-weight: 500; }
 .section { margin: 20rpx; }
 .section-title { font-size: 32rpx; font-weight: bold; margin-bottom: 20rpx; color: #333; }
-.parking-card { background: #fff; border-radius: 16rpx; padding: 30rpx; box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06); }
+.parking-card { background: #fff; border-radius: 16rpx; padding: 30rpx; margin-bottom: 16rpx; box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06); }
 .parking-row { display: flex; justify-content: space-between; padding: 12rpx 0; font-size: 28rpx; }
 .parking-row .label { color: #999; }
 .parking-row .value { color: #333; }
+.bold { font-weight: bold; font-size: 30rpx; }
 .highlight { color: #E6A23C; font-weight: bold; }
-.reserve-card { background: #fff; border-radius: 12rpx; padding: 20rpx 30rpx; margin-bottom: 16rpx; box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04); }
+.reserve-card { background: #fff; border-radius: 12rpx; padding: 20rpx 60rpx 20rpx 30rpx; margin-bottom: 16rpx; box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04); position: relative; }
 .reserve-header { display: flex; justify-content: space-between; margin-bottom: 10rpx; }
 .reserve-no { font-size: 26rpx; color: #666; }
 .reserve-detail { font-size: 24rpx; color: #999; margin-top: 4rpx; }
-.reserve-status { color: #E6A23C; font-size: 24rpx; }
+.reserve-status { font-size: 24rpx; }
+.status-0 { color: #909399; }
+.status-1 { color: #E6A23C; }
+.status-2 { color: #67C23A; }
+.status-3 { color: #F56C6C; }
+.status-4 { color: #909399; }
+.reserve-arrow { position: absolute; right: 24rpx; top: 50%; transform: translateY(-50%); font-size: 40rpx; color: #ccc; }
 .spots-grid { display: flex; flex-wrap: wrap; gap: 16rpx; }
 .spot-item { background: #fff; border-radius: 12rpx; padding: 20rpx; width: calc(25% - 12rpx); text-align: center; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); box-sizing: border-box; }
+.spot-status-0 { border-bottom: 4rpx solid #67C23A; }
+.spot-status-1 { border-bottom: 4rpx solid #F56C6C; background: #fef0f0; }
+.spot-status-2 { border-bottom: 4rpx solid #007AFF; background: #f0f7ff; }
 .spot-code { display: block; font-size: 26rpx; font-weight: bold; color: #333; }
 .spot-price { display: block; font-size: 22rpx; color: #F56C6C; margin-top: 4rpx; }
+.area-group { margin-bottom: 20rpx; }
+.area-title { font-size: 26rpx; font-weight: bold; color: #007AFF; margin-bottom: 12rpx; padding-left: 8rpx; border-left: 6rpx solid #007AFF; }
 .empty { text-align: center; color: #999; padding: 40rpx 0; font-size: 26rpx; }

@@ -61,7 +61,11 @@ async function handleForceExit(row: any) {
     await forceExit(row.id)
     ElMessage.success('已强制离场')
     loadData()
-  } catch (e) {}
+  } catch (e: any) {
+    if (e !== 'cancel') {
+      ElMessage.error(e.message || '强制离场失败')
+    }
+  }
 }
 
 onMounted(() => { loadData() })

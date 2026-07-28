@@ -7,6 +7,7 @@
       <view class="info-box" v-if="currentRecord">
         <view class="info-row"><text class="info-label">车牌号</text><text>{{ currentRecord.plateNumber }}</text></view>
         <view class="info-row"><text class="info-label">入场时间</text><text>{{ currentRecord.entryTime }}</text></view>
+        <view class="info-row"><text class="info-label">费率</text><text>¥{{ currentRecord.spotPricePerHour || 5 }}/小时</text></view>
         <view class="info-row"><text class="info-label">已停时长</text><text class="highlight">{{ durationText }}</text></view>
         <view class="info-row fee-row"><text class="info-label">预计费用</text><text class="fee">¥{{ estimatedFee.toFixed(2) }}</text></view>
         <view class="info-row"><text class="info-label">账户余额</text><text>¥{{ (userInfo && userInfo.balance) || '0.00' }}</text></view>
@@ -31,9 +32,17 @@ const currentRecord = ref(null)
 const userInfo = ref(null)
 const submitting = ref(false)
 
+// iOS 兼容的日期解析：用构造函数代替字符串解析
+function parseDateTime(str) {
+  if (!str) return new Date()
+  const parts = str.split(' ')[0].split('-')
+  const times = (str.split(' ')[1] || '00:00:00').split(':')
+  return new Date(+parts[0], +parts[1] - 1, +parts[2], +times[0], +times[1], +times[2] || 0)
+}
+
 const durationText = computed(() => {
   if (!currentRecord.value) return '--'
-  const start = new Date(currentRecord.value.entryTime.replace(/-/g, '/')).getTime()
+  const start = parseDateTime(currentRecord.value.entryTime).getTime()
   const now = Date.now()
   const diff = Math.floor((now - start) / 1000 / 60)
   if (diff < 60) return diff + '分钟'
@@ -42,11 +51,12 @@ const durationText = computed(() => {
 
 const estimatedFee = computed(() => {
   if (!currentRecord.value) return 0
-  const start = new Date(currentRecord.value.entryTime.replace(/-/g, '/')).getTime()
+  const start = parseDateTime(currentRecord.value.entryTime).getTime()
   const now = Date.now()
   const hours = Math.ceil((now - start) / 1000 / 3600 * 100) / 100
-  // This will be calculated server-side; show rough estimate
-  return Math.ceil(hours) * 5
+  // Use spot's actual hourly rate from the backend response, fall back to 5.00
+  const hourlyRate = currentRecord.value.spotPricePerHour || 5
+  return Math.ceil(hours) * hourlyRate
 })
 
 async function loadData() {

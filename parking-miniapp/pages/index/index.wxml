@@ -1,7 +1,7 @@
 <view class="container">
   <!-- Header -->
   <view class="header">
-    <view class="header-title">停车场管理系统</view>
+    <view class="header-title">停车车位预约和停车场入场功能界面</view>
     <view class="header-balance" wx:if="{{userInfo}}">
       余额：<text class="balance-amount">¥{{userInfo.balance || '0.00'}}</text>
     </view>
@@ -27,37 +27,62 @@
     </view>
   </view>
 
-  <!-- Current Parking -->
-  <view class="section" wx:if="{{currentParking}}">
-    <view class="section-title">当前停车</view>
-    <view class="parking-card">
-      <view class="parking-row"><text class="label">车牌号</text><text class="value">{{currentParking.plateNumber}}</text></view>
-      <view class="parking-row"><text class="label">入场时间</text><text class="value">{{currentParking.entryTime}}</text></view>
-      <view class="parking-row"><text class="label">已停时长</text><text class="value highlight">{{durationText}}</text></view>
+  <!-- 正在停车（全部车辆） -->
+  <view class="section" wx:if="{{parkedVehicles.length > 0}}">
+    <view class="section-title">正在停车（{{parkedVehicles.length}}辆）</view>
+    <view class="parking-card" wx:for="{{parkedVehicles}}" wx:key="recordId">
+      <view class="parking-row">
+        <text class="label">车牌号</text>
+        <text class="value bold">{{item.plateNumber}}</text>
+      </view>
+      <view class="parking-row">
+        <text class="label">车位</text>
+        <text class="value">{{item.spotCode}}</text>
+      </view>
+      <view class="parking-row">
+        <text class="label">用户</text>
+        <text class="value">{{item.nickname}}{{item.phone ? ' ' + item.phone : ''}}</text>
+      </view>
+      <view class="parking-row">
+        <text class="label">入场时间</text>
+        <text class="value">{{item.entryTime}}</text>
+      </view>
+      <view class="parking-row">
+        <text class="label">已停时长</text>
+        <text class="value highlight">{{item.durationText}}</text>
+      </view>
     </view>
   </view>
+  <view class="section" wx:else>
+    <view class="section-title">正在停车</view>
+    <view class="empty">暂无车辆停放</view>
+  </view>
 
-  <!-- Reservations -->
+  <!-- 全部预约 -->
   <view class="section">
-    <view class="section-title">近期预约</view>
-    <view wx:if="{{reservations.length === 0}}" class="empty">暂无预约记录</view>
-    <view class="reserve-card" wx:for="{{reservations}}" wx:key="id">
+    <view class="section-title">全部预约（{{activeReservations.length}}个）</view>
+    <view wx:if="{{activeReservations.length === 0}}" class="empty">暂无预约记录</view>
+    <view class="reserve-card" wx:for="{{activeReservations}}" wx:key="id" bindtap="goReserveDetail" data-id="{{item.id}}">
       <view class="reserve-header">
         <text class="reserve-no">{{item.reservationNo}}</text>
-        <text class="reserve-status">进行中</text>
+        <text class="reserve-status status-1">进行中</text>
       </view>
-      <view class="reserve-detail"><text>车位{{item.spotId}} | {{item.startTime}}~{{item.endTime}}</text></view>
+      <view class="reserve-detail"><text>{{item.nickname}} · 车位#{{item.spotId}} · {{item.startTime}}~{{item.endTime}}</text></view>
       <view class="reserve-detail"><text>金额: ¥{{item.totalAmount}}</text></view>
+      <view class="reserve-arrow">›</view>
     </view>
   </view>
 
-  <!-- Available Spots -->
+  <!-- 全部车位（按区域分组） -->
   <view class="section">
-    <view class="section-title">空闲车位</view>
-    <view class="spots-grid" wx:if="{{spots.length > 0}}">
-      <view class="spot-item" wx:for="{{spots}}" wx:key="id">
-        <text class="spot-code">{{item.spotCode}}</text>
-        <text class="spot-price">¥{{item.pricePerHour}}/h</text>
+    <view class="section-title">全部车位</view>
+    <view class="area-group" wx:for="{{areaGroups}}" wx:key="area">
+      <view class="area-title">{{item.area}}（{{item.spots.length}}个）</view>
+      <view class="spots-grid">
+        <view class="spot-item spot-status-{{s.status}}" wx:for="{{item.spots}}" wx:key="id" wx:for-item="s">
+          <text class="spot-code">{{s.spotCode}}</text>
+          <text class="spot-price">¥{{s.pricePerHour}}/h</text>
+        </view>
       </view>
     </view>
   </view>

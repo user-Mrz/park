@@ -22,4 +22,10 @@ public class SpotController {
                      @RequestParam(required = false) String area) {
         return R.ok(spotService.getAvailableSpots(page, pageSize, area));
     }
+
+    @Operation(summary = "Get public overview: all spots, parked vehicles, active reservations")
+    @GetMapping("/overview")
+    public R<?> overview() {
+        return R.ok(spotService.getOverview());
+    }
 }

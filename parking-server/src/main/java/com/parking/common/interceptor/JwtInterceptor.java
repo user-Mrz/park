@@ -31,9 +31,16 @@ public class JwtInterceptor implements HandlerInterceptor {
         token = token.substring(7);
         try {
             Claims claims = jwtUtil.parseToken(token);
+            String role = claims.get("role", String.class);
+            String requestUri = request.getRequestURI();
+            if (requestUri.startsWith("/api/admin/") && !"admin".equals(role)) {
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"code\":403,\"message\":\"Admin permission required\"}");
+                return false;
+            }
             UserContext.setUserId(Long.valueOf(claims.getSubject()));
             UserContext.setPhone(claims.get("phone", String.class));
-            UserContext.setRole(claims.get("role", String.class));
+            UserContext.setRole(role);
             return true;
         } catch (Exception e) {
             response.setContentType("application/json;charset=UTF-8");

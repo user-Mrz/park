@@ -28,54 +28,66 @@
       </view>
     </view>
 
-    <!-- Current Parking Status -->
-    <view class="section" v-if="currentParking">
-      <view class="section-title">当前停车</view>
-      <view class="parking-card">
+    <!-- 正在停车（全部车辆） -->
+    <view class="section" v-if="parkedVehicles.length > 0">
+      <view class="section-title">正在停车（{{ parkedVehicles.length }}辆）</view>
+      <view class="parking-card" v-for="pv in parkedVehicles" :key="pv.recordId">
         <view class="parking-row">
           <text class="label">车牌号</text>
-          <text class="value">{{ currentParking.plateNumber }}</text>
+          <text class="value bold">{{ pv.plateNumber }}</text>
         </view>
         <view class="parking-row">
           <text class="label">车位</text>
-          <text class="value">{{ currentParking.spotId }}</text>
+          <text class="value">{{ pv.spotCode }}</text>
+        </view>
+        <view class="parking-row">
+          <text class="label">用户</text>
+          <text class="value">{{ pv.nickname }}{{ pv.phone ? ' ' + pv.phone.substring(7) : '' }}</text>
         </view>
         <view class="parking-row">
           <text class="label">入场时间</text>
-          <text class="value">{{ currentParking.entryTime }}</text>
+          <text class="value">{{ pv.entryTime }}</text>
         </view>
         <view class="parking-row">
           <text class="label">已停时长</text>
-          <text class="value highlight">{{ formatDuration(currentParking.entryTime) }}</text>
+          <text class="value highlight">{{ formatDuration(pv.entryTime) }}</text>
         </view>
       </view>
     </view>
+    <view class="section" v-else>
+      <view class="section-title">正在停车</view>
+      <view class="empty">暂无车辆停放</view>
+    </view>
 
-    <!-- Upcoming Reservations -->
+    <!-- 全部预约 -->
     <view class="section">
-      <view class="section-title">近期预约</view>
-      <view v-if="reservations.length === 0" class="empty">暂无预约记录</view>
-      <view class="reserve-card" v-for="r in reservations" :key="r.id">
+      <view class="section-title">全部预约（{{ activeReservations.length }}个）</view>
+      <view v-if="activeReservations.length === 0" class="empty">暂无预约记录</view>
+      <view class="reserve-card" v-for="r in activeReservations" :key="r.id" @click="goReserveDetail(r.id)">
         <view class="reserve-header">
           <text class="reserve-no">{{ r.reservationNo }}</text>
-          <text class="reserve-status" :class="'status-' + r.status">{{ statusText(r.status) }}</text>
+          <text class="reserve-status status-1">进行中</text>
         </view>
         <view class="reserve-detail">
-          <text>车位: {{ r.spotId }} | {{ r.startTime }} ~ {{ r.endTime }}</text>
+          <text>{{ r.nickname }} · 车位#{{ r.spotId }} · {{ r.startTime }} ~ {{ r.endTime }}</text>
         </view>
         <view class="reserve-detail">
           <text>金额: ¥{{ r.totalAmount }}</text>
         </view>
+        <view class="reserve-arrow">›</view>
       </view>
     </view>
 
-    <!-- Available Spots -->
+    <!-- 全部车位（按区域分组） -->
     <view class="section">
-      <view class="section-title">空闲车位</view>
-      <view class="spots-grid" v-if="spots.length > 0">
-        <view class="spot-item" v-for="s in spots" :key="s.id" :class="'spot-' + s.status">
-          <text class="spot-code">{{ s.spotCode }}</text>
-          <text class="spot-price">¥{{ s.pricePerHour }}/h</text>
+      <view class="section-title">全部车位</view>
+      <view class="area-group" v-for="group in areaGroups" :key="group.area">
+        <view class="area-title">{{ group.area }}（{{ group.spots.length }}个）</view>
+        <view class="spots-grid">
+          <view class="spot-item" v-for="s in group.spots" :key="s.id" :class="'spot-status-' + s.status">
+            <text class="spot-code">{{ s.spotCode }}</text>
+            <text class="spot-price">¥{{ s.pricePerHour }}/h</text>
+          </view>
         </view>
       </view>
     </view>
@@ -84,21 +96,19 @@
 
 <script setup>
 import { ref, onShow } from 'vue'
-import { get, post } from '@/utils/request'
+import { get } from '@/utils/request'
 
 const userInfo = ref(null)
-const currentParking = ref(null)
-const reservations = ref([])
-const spots = ref([])
-
-function statusText(s) {
-  const map = { 0: '待确认', 1: '进行中', 2: '已完成', 3: '已取消', 4: '已过期' }
-  return map[s] || '未知'
-}
+const parkedVehicles = ref([])
+const activeReservations = ref([])
+const areaGroups = ref([])
 
 function formatDuration(entryTime) {
   if (!entryTime) return '--'
-  const start = new Date(entryTime.replace(/-/g, '/')).getTime()
+  // iOS 兼容日期解析
+  const parts = entryTime.split(' ')[0].split('-')
+  const times = (entryTime.split(' ')[1] || '00:00:00').split(':')
+  const start = new Date(+parts[0], +parts[1] - 1, +parts[2], +times[0], +times[1], +times[2] || 0).getTime()
   const now = Date.now()
   const diff = Math.floor((now - start) / 1000 / 60)
   if (diff < 60) return diff + '分钟'
@@ -121,11 +131,7 @@ function goEnter() {
 function goExit() {
   const token = uni.getStorageSync('token')
   if (!token) { uni.navigateTo({ url: '/pages/login/login' }); return }
-  if (!currentParking.value) {
-    uni.showToast({ title: '当前没有停车记录', icon: 'none' })
-    return
-  }
-  uni.navigateTo({ url: `/pages/exit/exit?id=${currentParking.value.id}` })
+  uni.navigateTo({ url: '/pages/exit/exit' })
 }
 
 function goRecharge() {
@@ -134,20 +140,41 @@ function goRecharge() {
   uni.navigateTo({ url: '/pages/recharge/recharge' })
 }
 
+function goReserveDetail(id) {
+  uni.navigateTo({ url: `/pages/reserve-detail/reserve-detail?id=${id}` })
+}
+
 async function loadData() {
+  // 用户信息（需登录）
   const token = uni.getStorageSync('token')
-  if (!token) return
+  if (token) {
+    try {
+      const infoRes = await get('/user/info')
+      userInfo.value = infoRes.data
+    } catch (e) { /* ignore */ }
+  }
+  // 公开概览，失败则回退用 /spot/list
   try {
-    const infoRes = await get('/user/info')
-    userInfo.value = infoRes.data
-    const currentRes = await get('/vehicle/current')
-    currentParking.value = currentRes.data
-    const resRes = await get('/user/reservations', { page: 1, pageSize: 5 })
-    reservations.value = (resRes.data && resRes.data.records) || []
-    const spotRes = await get('/spot/list', { page: 1, pageSize: 20 })
-    spots.value = (spotRes.data && spotRes.data.records) ? spotRes.data.records.filter(s => s.status === 0).slice(0, 10) : []
+    const overRes = await get('/spot/overview')
+    const data = overRes.data
+    parkedVehicles.value = data.parkedVehicles || []
+    activeReservations.value = data.activeReservations || []
+    areaGroups.value = data.areaGroups || []
   } catch (e) {
-    // Silently fail for non-logged-in users
+    // 概览接口失败时，回退加载车位数据
+    try {
+      const spotRes = await get('/spot/list', { page: 1, pageSize: 500 })
+      const allSpots = (spotRes.data && spotRes.data.records) || []
+      const map = {}
+      allSpots.forEach(s => {
+        const area = s.area || '未分区'
+        if (!map[area]) map[area] = []
+        map[area].push(s)
+      })
+      areaGroups.value = Object.keys(map).sort().map(area => ({ area, spots: map[area] }))
+    } catch (e2) {
+      // ignore
+    }
   }
 }
 
@@ -171,17 +198,24 @@ onShow(() => { loadData() })
 .parking-row .label { color: #999; }
 .parking-row .value { color: #333; }
 .parking-row .highlight { color: #E6A23C; font-weight: bold; }
-.reserve-card { background: #fff; border-radius: 12rpx; padding: 20rpx 30rpx; margin-bottom: 16rpx; box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04); }
-.reserve-header { display: flex; justify-content: space-between; margin-bottom: 10rpx; }
+.reserve-card { background: #fff; border-radius: 12rpx; padding: 20rpx 30rpx; margin-bottom: 16rpx; box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04); position: relative; }
+.reserve-card:active { background: #f8f8f8; }
+.reserve-header { display: flex; justify-content: space-between; margin-bottom: 10rpx; padding-right: 30rpx; }
 .reserve-no { font-size: 26rpx; color: #666; }
 .reserve-detail { font-size: 24rpx; color: #999; margin-top: 4rpx; }
+.reserve-arrow { position: absolute; right: 24rpx; top: 50%; transform: translateY(-50%); font-size: 40rpx; color: #ccc; }
 .status-0, .status-4 { color: #909399; }
 .status-1 { color: #E6A23C; }
 .status-2 { color: #67C23A; }
 .status-3 { color: #F56C6C; }
 .spots-grid { display: flex; flex-wrap: wrap; gap: 16rpx; }
 .spot-item { background: #fff; border-radius: 12rpx; padding: 20rpx; width: calc(25% - 12rpx); text-align: center; box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04); }
+.spot-status-0 { border-bottom: 4rpx solid #67C23A; }
+.spot-status-1 { border-bottom: 4rpx solid #F56C6C; background: #fef0f0; }
+.spot-status-2 { border-bottom: 4rpx solid #007AFF; background: #f0f7ff; }
 .spot-code { display: block; font-size: 26rpx; font-weight: bold; color: #333; }
 .spot-price { display: block; font-size: 22rpx; color: #F56C6C; margin-top: 4rpx; }
+.area-group { margin-bottom: 20rpx; }
+.area-title { font-size: 26rpx; font-weight: bold; color: #007AFF; margin-bottom: 12rpx; padding-left: 8rpx; border-left: 6rpx solid #007AFF; }
 .empty { text-align: center; color: #999; padding: 40rpx 0; font-size: 26rpx; }
 </style>

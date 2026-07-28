@@ -1,4 +1,8 @@
 .container { padding: 30rpx; }
+.status-box { background: #fff; border-radius: 16rpx; padding: 80rpx 30rpx; text-align: center; }
+.loading-text { font-size: 28rpx; color: #999; }
+.error-text { font-size: 28rpx; color: #F56C6C; margin-bottom: 30rpx; }
+.retry-btn { width: 200rpx; height: 64rpx; line-height: 64rpx; background: #007AFF; color: #fff; border-radius: 32rpx; font-size: 26rpx; }
 .form-card { background: #fff; border-radius: 16rpx; padding: 30rpx; }
 .form-title { font-size: 28rpx; color: #666; margin: 20rpx 0 10rpx; }
 .picker-view { height: 88rpx; line-height: 88rpx; background: #f8f8f8; border-radius: 12rpx; padding: 0 24rpx; font-size: 28rpx; color: #333; }

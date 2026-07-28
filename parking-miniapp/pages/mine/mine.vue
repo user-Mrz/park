@@ -37,7 +37,7 @@
         <text>📋 停车记录</text>
         <text class="arrow">›</text>
       </view>
-      <view class="menu-item" @click="goPage('/pages/recharge/recharge')">
+      <view class="menu-item" @click="goPage('/pages/record/record?tab=1')">
         <text>💰 充值记录</text>
         <text class="arrow">›</text>
       </view>
@@ -58,11 +58,15 @@
 
 <script setup>
 import { ref, computed, onShow } from 'vue'
+import { get } from '@/utils/request'
 
 const userInfo = ref(null)
 const isLoggedIn = computed(() => !!userInfo.value)
 
-function goPage(url) {
+function goPage(e) {
+  // UniApp 编译后传事件对象，开发模式直接传字符串
+  const url = typeof e === 'string' ? e : (e.currentTarget?.dataset?.url || '')
+  if (!url) return
   const token = uni.getStorageSync('token')
   if (!token && url !== '/pages/login/login') {
     uni.navigateTo({ url: '/pages/login/login' })
@@ -90,13 +94,30 @@ function handleLogout() {
   })
 }
 
-onShow(() => {
+async function fetchUserInfo() {
+  const token = uni.getStorageSync('token')
+  if (!token) {
+    userInfo.value = null
+    return
+  }
   try {
-    const stored = uni.getStorageSync('userInfo')
-    if (stored) userInfo.value = JSON.parse(stored)
-    const token = uni.getStorageSync('token')
-    if (!token) userInfo.value = null
-  } catch (e) { userInfo.value = null }
+    const res = await get('/user/info')
+    if (res.data) {
+      userInfo.value = res.data
+      // Also update localStorage for other pages
+      uni.setStorageSync('userInfo', JSON.stringify(res.data))
+    }
+  } catch (e) {
+    // Fallback to cached data on network error
+    try {
+      const stored = uni.getStorageSync('userInfo')
+      if (stored) userInfo.value = JSON.parse(stored)
+    } catch (e2) { userInfo.value = null }
+  }
+}
+
+onShow(() => {
+  fetchUserInfo()
 })
 </script>
 

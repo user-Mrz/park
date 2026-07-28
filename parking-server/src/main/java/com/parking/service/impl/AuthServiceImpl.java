@@ -58,6 +58,8 @@ public class AuthServiceImpl implements AuthService {
         result.put("userId", user.getId());
         result.put("phone", user.getPhone());
         result.put("nickname", user.getNickname());
+        result.put("plateNumber", user.getPlateNumber());
+        result.put("balance", user.getBalance());
         return result;
     }
 

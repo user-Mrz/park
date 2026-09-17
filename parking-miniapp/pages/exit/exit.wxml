@@ -11,6 +11,8 @@
       <view class="info-row"><text class="info-label">账户余额</text><text>¥{{userInfo.balance || '0.00'}}</text></view>
     </view>
 
+    <view class="settle-note" wx:if="{{settlementNote}}">📋 {{settlementNote}}</view>
+
     <view class="warning" wx:if="{{estimatedFee > (userInfo && userInfo.balance || 0)}}">
       ⚠️ 余额不足，请先充值再离场
     </view>

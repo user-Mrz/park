@@ -1,0 +1,116 @@
+<view class="container">
+  <!-- 头像与概览 -->
+  <view class="head-card">
+    <view class="avatar-wrap" bindtap="chooseAvatar">
+      <image wx:if="{{avatar}}" class="avatar-img" src="{{fileBase}}{{avatar}}" mode="aspectFill" />
+      <view wx:else class="avatar-emoji">👤</view>
+      <view class="avatar-mask">{{uploading ? '上传中…' : '更换'}}</view>
+    </view>
+    <view class="head-info">
+      <text class="head-nickname">{{nickname || '未设置昵称'}}</text>
+      <text class="head-sub">{{phone || '未绑定手机号'}}</text>
+      <text class="head-sub" wx:if="{{plateNumber}}">车牌 {{plateNumber}}</text>
+    </view>
+  </view>
+
+  <!-- 资料编辑 -->
+  <view class="card">
+    <view class="card-title">基本资料</view>
+
+    <view class="form-item">
+      <text class="form-label">昵称</text>
+      <input class="form-input" type="nickname" maxlength="20" placeholder="请输入昵称" value="{{nickname}}" bindinput="onNicknameInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">手机号</text>
+      <input class="form-input" type="number" maxlength="11" placeholder="请输入 11 位手机号" value="{{phone}}" bindinput="onPhoneInput" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">车牌号</text>
+      <input class="form-input" maxlength="8" placeholder="如 粤B12345，留空表示不绑定" value="{{plateNumber}}" bindinput="onPlateInput" />
+    </view>
+
+    <view class="tip">手机号用于登录，修改后请使用新手机号登录；车牌号用于入场/出场自动识别。</view>
+
+    <button class="primary-btn" loading="{{saving}}" disabled="{{saving}}" bindtap="saveProfile">保存修改</button>
+    <button class="ghost-btn" wx:if="{{avatar}}" bindtap="removeAvatar">移除头像</button>
+  </view>
+
+  <!-- 账号信息 -->
+  <view class="card">
+    <view class="card-title">账号信息</view>
+    <view class="info-row"><text class="info-label">用户 ID</text><text class="info-value">{{userId}}</text></view>
+    <view class="info-row"><text class="info-label">微信绑定</text><text class="info-value">{{openidText}}</text></view>
+    <view class="info-row"><text class="info-label">注册时间</text><text class="info-value">{{createdAt}}</text></view>
+    <view class="info-row"><text class="info-label">账号状态</text><text class="info-value">{{statusText}}</text></view>
+    <view class="info-row"><text class="info-label">账户余额</text><text class="info-value">¥{{balance}}</text></view>
+  </view>
+
+  <!-- 校园身份 -->
+  <view class="card">
+    <view class="card-title">
+      校园身份
+      <text class="badge {{identityVerified ? 'ok' : 'pending'}}">{{identityStatusText}}</text>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">身份类型</text>
+      <picker mode="selector" range="{{identityLabels}}" value="{{identityIndex}}" bindchange="onIdentityChange">
+        <view class="picker-value">{{identityLabels[identityIndex]}}</view>
+      </picker>
+    </view>
+    <view class="form-item">
+      <text class="form-label">学号/工号</text>
+      <input class="form-input" value="{{userNo}}" placeholder="学生/教师/职工必填" bindinput="onUserNoInput" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">院系/部门</text>
+      <picker wx:if="{{deptNames.length > 0}}" class="form-picker" mode="selector" range="{{deptNames}}" value="{{deptIndex}}" bindchange="onDeptChange">
+        <view class="picker-value">{{department || '请选择学院/部门'}}</view>
+      </picker>
+      <input wx:else class="form-input" value="{{department}}" placeholder="如 计算机与信息工程学院" bindinput="onDepartmentInput" />
+    </view>
+    <view class="form-item">
+      <text class="form-label">班级</text>
+      <input class="form-input" value="{{className}}" placeholder="如 计算机2101班（选填）" bindinput="onClassNameInput" />
+    </view>
+
+    <view class="tip">{{identityRemark || '学生/教师/职工需管理员审核；访客/家长无需审核'}}</view>
+    <button class="primary-btn" loading="{{savingIdentity}}" disabled="{{savingIdentity}}" bindtap="saveIdentity">提交身份信息</button>
+  </view>
+
+  <!-- 校园权益 -->
+  <view class="card" wx:if="{{benefits}}">
+    <view class="card-title">我的校园权益</view>
+    <view class="info-row"><text class="info-label">计费身份</text><text class="info-value">{{benefits.effectiveIdentityLabel}}</text></view>
+    <view class="info-row"><text class="info-label">费率系数</text><text class="info-value">{{benefits.discount}} 倍{{benefits.verified ? '' : '（未认证按访客费率）'}}</text></view>
+    <view class="info-row"><text class="info-label">免费停车时长</text><text class="info-value">{{benefits.freeMinutes}} 分钟</text></view>
+    <view class="info-row">
+      <text class="info-label">今日预约剩余次数</text>
+      <text class="info-value">{{benefits.remainingQuota < 0 ? '不限' : benefits.remainingQuota + ' / ' + benefits.dailyLimit}}</text>
+    </view>
+    <view class="info-row"><text class="info-label">夜间禁停时段</text><text class="info-value">{{benefits.nightBanStart}} - {{benefits.nightBanEnd}}</text></view>
+    <view class="info-row"><text class="info-label">当前模式</text><text class="info-value">{{benefits.semesterMode === 1 ? '假期模式' : '学期模式'}}</text></view>
+    <view class="tip">校园分区：教学楼区 / 图书馆区 / 宿舍区 / 访客与家长临时停车区，不同身份可停放的区域不同。</view>
+  </view>
+
+  <!-- 账号绑定与安全 -->
+  <view class="card">
+    <view class="card-title">账号绑定与安全</view>
+
+    <view class="link-row">
+      <text>💬 微信绑定</text>
+      <text class="bind-status {{bound ? 'on' : ''}}">{{bound ? '已绑定' : '未绑定'}}</text>
+    </view>
+    <button wx:if="{{!bound}}" class="primary-btn" loading="{{binding}}" disabled="{{binding}}" bindtap="bindWechat">绑定微信账号</button>
+    <button wx:else class="ghost-btn" bindtap="unbindWechat">解除微信绑定</button>
+
+    <view class="link-row" bindtap="goPassword" style="margin-top: 6rpx;">
+      <text>🔒 修改登录密码</text>
+      <text class="arrow">›</text>
+    </view>
+    <view class="tip">绑定微信后可直接「微信一键登录」；解绑前请确保已设置手机号和登录密码，否则会失去登录方式。</view>
+  </view>
+</view>

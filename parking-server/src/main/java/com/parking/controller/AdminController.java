@@ -2,14 +2,22 @@ package com.parking.controller;
 
 import com.parking.common.R;
 import com.parking.common.UserContext;
+import com.parking.dto.BlacklistDTO;
+import com.parking.entity.Department;
 import com.parking.entity.ParkingSpot;
 import com.parking.entity.VehicleRecord;
 import com.parking.service.AdminService;
+import com.parking.service.CampusAdminService;
+import com.parking.service.DepartmentService;
+import com.parking.service.VisitReportService;
+import com.parking.service.ViolationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Map;
 
 @Tag(name = "Admin", description = "Admin management APIs")
@@ -19,6 +27,10 @@ import java.util.Map;
 public class AdminController {
 
     private final AdminService adminService;
+    private final VisitReportService visitReportService;
+    private final ViolationService violationService;
+    private final CampusAdminService campusAdminService;
+    private final DepartmentService departmentService;
 
     // --- Dashboard ---
     @Operation(summary = "Get dashboard statistics")
@@ -33,8 +45,10 @@ public class AdminController {
     public R<?> users(@RequestParam(defaultValue = "1") int page,
                       @RequestParam(defaultValue = "10") int pageSize,
                       @RequestParam(required = false) String keyword,
-                      @RequestParam(required = false) Integer status) {
-        return R.ok(adminService.getUsers(page, pageSize, keyword, status));
+                      @RequestParam(required = false) Integer status,
+                      @RequestParam(required = false) Integer identityType,
+                      @RequestParam(required = false) Integer identityStatus) {
+        return R.ok(adminService.getUsers(page, pageSize, keyword, status, identityType, identityStatus));
     }
 
     @Operation(summary = "Get user detail")
@@ -47,6 +61,15 @@ public class AdminController {
     @PutMapping("/user/{id}/status")
     public R<?> updateUserStatus(@PathVariable Long id, @RequestParam Integer status) {
         adminService.updateUserStatus(id, status);
+        return R.ok();
+    }
+
+    @Operation(summary = "Audit campus identity (1 approve / 2 reject)")
+    @PutMapping("/user/{id}/identity")
+    public R<?> updateUserIdentity(@PathVariable Long id,
+                                    @RequestParam Integer identityStatus,
+                                    @RequestParam(required = false) String remark) {
+        adminService.updateUserIdentity(id, identityStatus, remark);
         return R.ok();
     }
 
@@ -135,6 +158,147 @@ public class AdminController {
     @GetMapping("/spot-map")
     public R<?> spotMap() {
         return R.ok(adminService.getSpotMap());
+    }
+
+    // --- Visitor / Parent Vehicle Reports ---
+    @Operation(summary = "Visitor / parent vehicle report list")
+    @GetMapping("/visit-reports")
+    public R<?> visitReports(@RequestParam(defaultValue = "1") int page,
+                             @RequestParam(defaultValue = "10") int pageSize,
+                             @RequestParam(required = false) Integer status,
+                             @RequestParam(required = false) String keyword) {
+        return R.ok(visitReportService.listAll(page, pageSize, status, keyword));
+    }
+
+    @Operation(summary = "Visitor / parent report statistics")
+    @GetMapping("/visit-reports/stats")
+    public R<?> visitReportStats() {
+        return R.ok(visitReportService.stats());
+    }
+
+    @Operation(summary = "Approve visitor / parent report")
+    @PutMapping("/visit-report/{id}/approve")
+    public R<?> approveVisitReport(@PathVariable Long id,
+                                   @RequestParam(required = false) Long spotId,
+                                   @RequestParam(required = false) String remark) {
+        return R.ok(visitReportService.approve(id, UserContext.getUserId(), spotId, remark));
+    }
+
+    @Operation(summary = "Reject visitor / parent report")
+    @PutMapping("/visit-report/{id}/reject")
+    public R<?> rejectVisitReport(@PathVariable Long id,
+                                  @RequestParam(required = false) String remark) {
+        return R.ok(visitReportService.reject(id, UserContext.getUserId(), remark));
+    }
+
+    @Operation(summary = "Check in visitor vehicle")
+    @PostMapping("/visit-report/{id}/check-in")
+    public R<?> checkInVisit(@PathVariable Long id) {
+        return R.ok(visitReportService.checkIn(id));
+    }
+
+    @Operation(summary = "Check out visitor vehicle (settle by campus rate)")
+    @PostMapping("/visit-report/{id}/check-out")
+    public R<?> checkOutVisit(@PathVariable Long id) {
+        return R.ok(visitReportService.checkOut(id));
+    }
+
+    // --- Violations ---
+    @Operation(summary = "Violation list")
+    @GetMapping("/violations")
+    public R<?> violations(@RequestParam(defaultValue = "1") int page,
+                           @RequestParam(defaultValue = "10") int pageSize,
+                           @RequestParam(required = false) Integer status,
+                           @RequestParam(required = false) String keyword) {
+        return R.ok(violationService.list(page, pageSize, status, keyword));
+    }
+
+    @Operation(summary = "Violation statistics")
+    @GetMapping("/violations/stats")
+    public R<?> violationStats() {
+        return R.ok(violationService.stats());
+    }
+
+    @Operation(summary = "Handle violation record")
+    @PutMapping("/violation/{id}/handle")
+    public R<?> handleViolation(@PathVariable Long id, @RequestParam(required = false) String remark) {
+        violationService.handle(id, UserContext.getUserId(), remark);
+        return R.ok();
+    }
+
+    // --- Campus statistics / Blacklist / Export ---
+    @Operation(summary = "Campus statistics by identity / department / zone")
+    @GetMapping("/campus-stats")
+    public R<?> campusStats() {
+        return R.ok(campusAdminService.campusStats());
+    }
+
+    @Operation(summary = "Blacklist page")
+    @GetMapping("/blacklist")
+    public R<?> blacklist(@RequestParam(defaultValue = "1") int page,
+                          @RequestParam(defaultValue = "10") int pageSize,
+                          @RequestParam(required = false) String keyword) {
+        return R.ok(campusAdminService.listBlacklist(page, pageSize, keyword));
+    }
+
+    @Operation(summary = "Add plate/user to blacklist")
+    @PostMapping("/blacklist")
+    public R<?> addBlacklist(@RequestBody BlacklistDTO dto) {
+        return R.ok(campusAdminService.addBlacklist(dto));
+    }
+
+    @Operation(summary = "Remove blacklist record")
+    @DeleteMapping("/blacklist/{id}")
+    public R<?> removeBlacklist(@PathVariable Long id) {
+        campusAdminService.removeBlacklist(id);
+        return R.ok();
+    }
+
+    @Operation(summary = "Export CSV report (users / reservations / payments / violations / visits)")
+    @GetMapping("/export/{type}")
+    public void export(@PathVariable String type, HttpServletResponse response) throws IOException {
+        String csv = campusAdminService.exportCsv(type);
+        response.setContentType("text/csv;charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("Content-Disposition",
+                "attachment; filename=" + type + "_" + System.currentTimeMillis() + ".csv");
+        // 前置 BOM，保证 Excel 正确识别 UTF-8 中文
+        response.getWriter().write('\uFEFF');
+        response.getWriter().write(csv);
+        response.getWriter().flush();
+    }
+
+    // --- Campus departments ---
+    @Operation(summary = "Department list (all)")
+    @GetMapping("/departments")
+    public R<?> departments() {
+        return R.ok(departmentService.list(false));
+    }
+
+    @Operation(summary = "Create department")
+    @PostMapping("/department")
+    public R<?> createDepartment(@RequestBody Department department) {
+        return R.ok(departmentService.create(department));
+    }
+
+    @Operation(summary = "Update department")
+    @PutMapping("/department/{id}")
+    public R<?> updateDepartment(@PathVariable Long id, @RequestBody Department department) {
+        return R.ok(departmentService.update(id, department));
+    }
+
+    @Operation(summary = "Enable / disable department")
+    @PutMapping("/department/{id}/status")
+    public R<?> updateDepartmentStatus(@PathVariable Long id, @RequestParam Integer status) {
+        departmentService.updateStatus(id, status);
+        return R.ok();
+    }
+
+    @Operation(summary = "Delete department (only when no user belongs to it)")
+    @DeleteMapping("/department/{id}")
+    public R<?> deleteDepartment(@PathVariable Long id) {
+        departmentService.remove(id);
+        return R.ok();
     }
 
     // --- System Config ---

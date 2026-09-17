@@ -1,4 +1,4 @@
-const app = getApp()
+import request from '../../utils/request.js'
 
 Page({
   data: {
@@ -31,38 +31,23 @@ Page({
   },
 
   loadVehicleRecords() {
-    const token = wx.getStorageSync('token')
-    if (!token) return
-    wx.request({
-      url: app.globalData.baseUrl + '/user/vehicle-records?page=1&pageSize=50',
-      header: { 'Authorization': 'Bearer ' + token },
-      success: (res) => {
-        if (res.data.code === 200) this.setData({ vehicleRecords: (res.data.data && res.data.data.records) || [] })
-      }
-    })
+    if (!wx.getStorageSync('token')) return
+    request.get('/user/vehicle-records?page=1&pageSize=50').then((res) => {
+      this.setData({ vehicleRecords: (res.data && res.data.records) || [] })
+    }).catch(() => {})
   },
 
   loadRechargeRecords() {
-    const token = wx.getStorageSync('token')
-    if (!token) return
-    wx.request({
-      url: app.globalData.baseUrl + '/user/recharge/records?page=1&pageSize=50',
-      header: { 'Authorization': 'Bearer ' + token },
-      success: (res) => {
-        if (res.data.code === 200) this.setData({ rechargeRecords: (res.data.data && res.data.data.records) || [] })
-      }
-    })
+    if (!wx.getStorageSync('token')) return
+    request.get('/user/recharge/records?page=1&pageSize=50').then((res) => {
+      this.setData({ rechargeRecords: (res.data && res.data.records) || [] })
+    }).catch(() => {})
   },
 
   loadPaymentRecords() {
-    const token = wx.getStorageSync('token')
-    if (!token) return
-    wx.request({
-      url: app.globalData.baseUrl + '/user/payment/records?page=1&pageSize=50',
-      header: { 'Authorization': 'Bearer ' + token },
-      success: (res) => {
-        if (res.data.code === 200) this.setData({ paymentRecords: (res.data.data && res.data.data.records) || [] })
-      }
-    })
+    if (!wx.getStorageSync('token')) return
+    request.get('/user/payment/records?page=1&pageSize=50').then((res) => {
+      this.setData({ paymentRecords: (res.data && res.data.records) || [] })
+    }).catch(() => {})
   }
 })

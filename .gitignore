@@ -1,0 +1,41 @@
+# ===== 依赖与构建产物（不入库）=====
+node_modules/
+parking-admin/node_modules/
+parking-server/target/
+parking-admin/dist/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# ===== IDE / 编辑器 =====
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# ===== 本地上传文件（用户头像等，含个人信息，勿提交）=====
+parking-server/uploads/
+!parking-server/uploads/.gitignore
+
+# ===== 日志与临时文件 =====
+*.log
+logs/
+run*.log
+*.tmp
+*.bak
+
+# ===== 本地数据库/缓存快照（数据库数据不入库）=====
+*.rdb
+*.sql.bak
+dump.rdb
+stress-test/users.json
+stress-test/users.sql
+stress-test/snapshot.sql
+stress-test/results.json
+stress-test/e2e-results.json
+
+# ===== 系统文件 =====
+.DS_Store
+Thumbs.db
+desktop.ini

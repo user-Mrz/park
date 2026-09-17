@@ -1,4 +1,5 @@
 const app = getApp()
+import { getDeviceId, getWxCode } from '../../utils/device.js'
 
 Page({
   data: {
@@ -9,11 +10,28 @@ Page({
     plateNumber: '',
     captchaCode: '',
     captchaImg: '',
-    captchaKey: ''
+    captchaKey: '',
+    isLoggedIn: false,
+    // 校园身份注册字段
+    identityLabels: ['学生', '教师', '职工', '访客', '家长'],
+    identityIndex: 0,
+    userNo: '',
+    department: '',
+    className: '',
+    // 学院/部门下拉（来自管理端「学院管理」维护的启用列表）
+    departments: [],
+    deptNames: [],
+    deptIndex: -1
   },
 
   onLoad() {
+    this.setData({ isLoggedIn: !!wx.getStorageSync('token') })
     this.loadCaptcha()
+    this.loadDepartments()
+  },
+
+  onShow() {
+    this.setData({ isLoggedIn: !!wx.getStorageSync('token') })
   },
 
   // ===== 输入绑定 =====
@@ -22,6 +40,22 @@ Page({
     if (field) {
       this.setData({ [field]: e.detail.value })
     }
+  },
+
+  // ===== 学院/部门（公开接口，注册时下拉选择） =====
+  loadDepartments() {
+    this._request('/departments').then((res) => {
+      const list = res.data || []
+      this.setData({
+        departments: list,
+        deptNames: list.map((d) => d.name)
+      })
+    }).catch(() => { /* 加载失败时可手动输入 */ })
+  },
+
+  onDeptChange(e) {
+    const idx = Number(e.detail.value)
+    this.setData({ deptIndex: idx, department: this.data.deptNames[idx] || '' })
   },
 
   // ===== 验证码 =====
@@ -69,15 +103,27 @@ Page({
     })
   },
 
+  onIdentityChange(e) {
+    this.setData({ identityIndex: Number(e.detail.value) })
+  },
+
   // ===== 手机号注册 =====
   handleRegister() {
-    const { phone, password, nickname, plateNumber, captchaCode, captchaKey } = this.data
+    const { phone, password, nickname, plateNumber, captchaCode, captchaKey,
+            identityIndex, userNo, department, className } = this.data
 
     if (!phone || !phone.match(/^1[3-9]\d{9}$/)) {
       wx.showToast({ title: '请输入正确的手机号', icon: 'none' }); return
     }
     if (!password || password.length < 6) {
       wx.showToast({ title: '密码至少6位', icon: 'none' }); return
+    }
+    const identityType = identityIndex + 1
+    if (identityType <= 3 && !/^[A-Za-z0-9]{4,20}$/.test((userNo || '').trim())) {
+      wx.showToast({ title: '请填写 4-20 位学号/工号', icon: 'none' }); return
+    }
+    if (identityType <= 3 && !(department || '').trim()) {
+      wx.showToast({ title: '请选择学院/部门', icon: 'none' }); return
     }
     if (!captchaCode) {
       wx.showToast({ title: '请输入验证码', icon: 'none' }); return
@@ -87,7 +133,10 @@ Page({
     }
 
     const data = {
-      phone, password, captchaKey, captchaCode
+      phone, password, captchaKey, captchaCode, identityType,
+      userNo: (userNo || '').trim(),
+      department: (department || '').trim(),
+      className: (className || '').trim()
     }
     if (nickname) data.nickname = nickname
     if (plateNumber) data.plateNumber = plateNumber
@@ -95,38 +144,48 @@ Page({
     this._doRequest('/auth/register', 'POST', data)
   },
 
-  // ===== 微信登录 =====
-  handleWechatLogin() {
-    wx.showLoading({ title: '登录中...', mask: true })
-    wx.login({
-      success: async (loginRes) => {
-        if (!loginRes.code) {
-          wx.hideLoading()
-          wx.showToast({ title: '微信授权失败', icon: 'none' }); return
-        }
-        try {
-          const res = await this._request('/auth/wechat-login', 'POST', { code: loginRes.code })
-          wx.hideLoading()
-          this._onLoginSuccess(res)
-        } catch (e) {
-          wx.hideLoading()
-        }
-      },
-      fail: () => {
+  // ===== 微信登录 / 绑定 =====
+  // 未登录：微信一键登录（openid 已注册则登录，否则创建新账号）
+  // 已登录：把当前微信绑定到已登录账号（避免又生成一个重复的空账号）
+  async handleWechatLogin() {
+    const token = wx.getStorageSync('token')
+    wx.showLoading({ title: token ? '绑定中...' : '登录中...', mask: true })
+    try {
+      const code = await getWxCode()
+      const deviceId = getDeviceId()
+
+      if (token) {
+        const res = await this._request('/user/bind-wechat', 'POST', { code, deviceId })
         wx.hideLoading()
-        wx.showToast({ title: '微信登录失败', icon: 'none' })
+        const info = (res && res.data) || {}
+        if (info.id) wx.setStorageSync('userInfo', JSON.stringify(info))
+        wx.showToast({ title: '已绑定当前账号', icon: 'success' })
+        setTimeout(() => {
+          wx.switchTab({ url: '/pages/mine/mine' })
+        }, 800)
+        return
       }
-    })
+
+      const res = await this._request('/auth/wechat-login', 'POST', { code, deviceId })
+      wx.hideLoading()
+      this._onLoginSuccess(res)
+    } catch (e) {
+      wx.hideLoading()
+    }
   },
 
   // ===== 通用请求方法 =====
   _request(url, method = 'GET', data = {}) {
     return new Promise((resolve, reject) => {
+      const token = wx.getStorageSync('token')
       wx.request({
         url: app.globalData.baseUrl + url,
         method,
         data,
-        header: { 'Content-Type': 'application/json' },
+        header: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? 'Bearer ' + token : ''
+        },
         success(res) {
           if (res.statusCode === 200 && res.data.code === 200) {
             resolve(res.data)

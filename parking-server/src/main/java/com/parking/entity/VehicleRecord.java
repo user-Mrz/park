@@ -18,8 +18,11 @@ public class VehicleRecord {
     @TableId(type = IdType.ASSIGN_ID)
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long spotId;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long reservationId;
     private String plateNumber;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
@@ -36,4 +39,8 @@ public class VehicleRecord {
     /** Transient field - hourly rate of the parking spot, set when querying current record */
     @TableField(exist = false)
     private BigDecimal spotPricePerHour;
+
+    /** Transient field - linked reservation amount, set when record is linked to a reservation */
+    @TableField(exist = false)
+    private BigDecimal reservationAmount;
 }

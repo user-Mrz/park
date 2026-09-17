@@ -8,6 +8,7 @@
 .highlight { color: #E6A23C; font-weight: bold; }
 .fee-row { margin-top: 10rpx; }
 .fee { font-size: 36rpx; font-weight: bold; color: #F56C6C; }
+.settle-note { background: #f0f9ff; color: #409EFF; padding: 16rpx; border-radius: 8rpx; font-size: 26rpx; margin-bottom: 20rpx; }
 .warning { background: #fef0f0; color: #F56C6C; padding: 16rpx; border-radius: 8rpx; font-size: 26rpx; margin-bottom: 20rpx; }
 .exit-btn { width: 100%; background: #F56C6C; color: #fff; border-radius: 12rpx; font-size: 32rpx; }
 .exit-btn[disabled] { opacity: 0.5; }

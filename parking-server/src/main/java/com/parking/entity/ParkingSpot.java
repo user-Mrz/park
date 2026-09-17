@@ -18,6 +18,12 @@ public class ParkingSpot {
     private Long id;
     private String spotCode;
     private String area;
+    /** 校园分区：teaching教学楼区 / library图书馆区 / dorm宿舍区 / gym体育馆区 / visitor访客与家长临时区 */
+    private String zoneCode;
+    /** 允许停放的身份类型，逗号分隔，如 "1,2,3" */
+    private String allowIdentities;
+    /** 本区域免费时长（分钟），0 表示按身份规则 */
+    private Integer freeMinutes;
     private String floor;
     private Integer status;  // 0-vacant 1-occupied 2-reserved 3-maintenance
     private BigDecimal pricePerHour;

@@ -16,6 +16,7 @@ public class RechargeRecord {
     @TableId(type = IdType.ASSIGN_ID)
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
     private String orderNo;
     private BigDecimal amount;

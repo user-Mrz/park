@@ -7,7 +7,8 @@
     <!-- 活动预约提示 -->
     <view class="reservation-hint" wx:if="{{activeReservation}}">
       <text>📌 您有活动预约：{{activeReservation.reservationNo}}</text>
-      <text class="hint-sub">预约车位 {{activeReservation.spotId}}，系统将自动关联</text>
+      <text class="hint-sub" wx:if="{{activeSpotCode}}">已自动选中预约车位 {{activeSpotCode}}，确认入场将自动关联预约</text>
+      <text class="hint-sub" wx:else>确认入场时将自动关联该预约</text>
     </view>
 
     <view class="form-item">

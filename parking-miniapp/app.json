@@ -7,12 +7,17 @@
     "pages/enter/enter",
     "pages/exit/exit",
     "pages/mine/mine",
+    "pages/profile/profile",
+    "pages/password/password",
+    "pages/visit/visit",
+    "pages/my-reservations/my-reservations",
+    "pages/my-violations/my-violations",
     "pages/recharge/recharge",
     "pages/record/record"
   ],
   "window": {
     "navigationBarTextStyle": "white",
-    "navigationBarTitleText": "停车场",
+    "navigationBarTitleText": "用户校园停车小程序",
     "navigationBarBackgroundColor": "#007AFF",
     "backgroundColor": "#F5F5F5"
   },

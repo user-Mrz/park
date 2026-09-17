@@ -1,0 +1,33 @@
+<view class="container">
+  <view class="card" wx:if="{{!isLoggedIn}}">
+    <view class="tip">请先登录后查看我的预约</view>
+    <button class="primary-btn" bindtap="goLogin">去登录</button>
+  </view>
+
+  <block wx:else>
+    <view class="card">
+      <view class="card-title">我的预约</view>
+      <view class="tip" wx:if="{{loading}}">加载中…</view>
+      <view class="tip" wx:elif="{{list.length === 0}}">暂无预约记录，去预约一个车位吧</view>
+
+      <view class="reserve-item" wx:for="{{list}}" wx:key="id">
+        <view class="item-head">
+          <text class="item-title">{{item.spotCode || '车位'}}{{item.spotArea ? ' · ' + item.spotArea : ''}}</text>
+          <text class="item-status {{item.statusCls}}">{{item.statusText}}</text>
+        </view>
+        <view class="item-line">预约时段：{{item.rangeText}}</view>
+        <view class="item-line">时长 {{item.durationHours}} 小时 · 金额 ¥{{item.totalAmount}}</view>
+        <view class="item-line">预约编号：{{item.reservationNo}}</view>
+        <view class="item-actions">
+          <text class="link" bindtap="goDetail" data-id="{{item.id}}">查看详情</text>
+          <text class="link" wx:if="{{item.status === 1}}" bindtap="goEnter">去入场</text>
+          <text class="link danger" wx:if="{{item.canCancel}}" bindtap="cancelReserve" data-id="{{item.id}}">取消预约</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="card">
+      <button class="primary-btn" bindtap="goReserve">去预约车位</button>
+    </view>
+  </block>
+</view>

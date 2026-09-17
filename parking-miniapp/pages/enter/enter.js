@@ -1,4 +1,4 @@
-const app = getApp()
+import request from '../../utils/request.js'
 
 Page({
   data: {
@@ -8,68 +8,54 @@ Page({
     plateNumber: '',
     reservationId: null,  // 预约ID，如果有活动预约则自动关联
     activeReservation: null,
+    activeSpotCode: '',
     submitting: false
   },
 
   onLoad() {
-    this.loadSpots()
-    this.checkReservation()
+    this.loadPageData()
   },
 
-  loadSpots() {
-    const token = wx.getStorageSync('token')
-    if (!token) return
-    wx.request({
-      url: app.globalData.baseUrl + '/spot/list?page=1&pageSize=100',
-      header: { 'Authorization': 'Bearer ' + token },
-      success: (res) => {
-        if (res.data.code === 200) {
-          // Show vacant (0) and reserved (2) spots; both are valid for entry
-          const spots = (res.data.data.records || []).filter(s => s.status === 0 || s.status === 2)
-          this.setData({ spots })
-        }
-      }
-    })
-    wx.request({
-      url: app.globalData.baseUrl + '/user/info',
-      header: { 'Authorization': 'Bearer ' + token },
-      success: (res) => {
-        if (res.data.code === 200 && res.data.data.plateNumber) {
-          this.setData({ plateNumber: res.data.data.plateNumber })
-        }
-      }
-    })
-  },
+  // 一次性并行加载: 车位列表 + 我的预约 + 用户信息(避免竞态导致未自动选中)
+  loadPageData() {
+    if (!wx.getStorageSync('token')) return
+    Promise.all([
+      request.get('/spot/list?page=1&pageSize=500'),
+      request.get('/user/reservations?page=1&pageSize=10'),
+      request.get('/user/info')
+    ]).then(([spotRes, resvRes, infoRes]) => {
+      const user = infoRes.data || {}
+      const reservations = (resvRes.data && resvRes.data.records) || []
+      // 取最近一条活跃预约(status=1)
+      const active = reservations.find(r => r.status === 1)
 
-  // Check if user has an active reservation to auto-link
-  checkReservation() {
-    const token = wx.getStorageSync('token')
-    if (!token) return
-    wx.request({
-      url: app.globalData.baseUrl + '/user/reservations?page=1&pageSize=5',
-      header: { 'Authorization': 'Bearer ' + token },
-      success: (res) => {
-        if (res.data.code === 200) {
-          const reservations = res.data.data.records || []
-          // Find the most recent active (status=1) reservation
-          const active = reservations.find(r => r.status === 1)
-          if (active) {
-            this.setData({
-              reservationId: active.id,
-              activeReservation: active
-            })
-            // Auto-select the reserved spot if it exists in the spot list
-            const spotIdx = this.data.spots.findIndex(s => s.id === active.spotId)
-            if (spotIdx >= 0) {
-              this.setData({
-                spotIndex: spotIdx,
-                selectedSpot: this.data.spots[spotIdx]
-              })
-            }
-          }
+      // 仅展示: 空闲车位(0) + 本人活跃预约占用的车位(2)。
+      // 他人已预约的车位不再展示, 避免选中后入场被后端拒绝("reserved by another user")。
+      const spots = ((spotRes.data && spotRes.data.records) || []).filter((s) => {
+        if (s.status === 0) return true
+        return s.status === 2 && active && String(s.id) === String(active.spotId)
+      })
+
+      this.setData({
+        spots,
+        plateNumber: user.plateNumber || '',
+        reservationId: active ? active.id : null,
+        activeReservation: active || null,
+        activeSpotCode: ''
+      })
+
+      // 若有本人活跃预约, 自动选中并关联对应车位
+      if (active) {
+        const idx = spots.findIndex((s) => String(s.id) === String(active.spotId))
+        if (idx >= 0) {
+          this.setData({
+            spotIndex: idx,
+            selectedSpot: spots[idx],
+            activeSpotCode: spots[idx].spotCode
+          })
         }
       }
-    })
+    }).catch(() => {})
   },
 
   onSpotChange(e) {
@@ -86,7 +72,6 @@ Page({
     if (!this.data.selectedSpot) { wx.showToast({ title: '请选择车位', icon: 'none' }); return }
     if (!this.data.plateNumber) { wx.showToast({ title: '请输入车牌号', icon: 'none' }); return }
     this.setData({ submitting: true })
-    const token = wx.getStorageSync('token')
     const reqData = {
       spotId: this.data.selectedSpot.id,
       plateNumber: this.data.plateNumber
@@ -95,20 +80,9 @@ Page({
     if (this.data.reservationId && this.data.selectedSpot.id === this.data.activeReservation?.spotId) {
       reqData.reservationId = this.data.reservationId
     }
-    wx.request({
-      url: app.globalData.baseUrl + '/vehicle/enter',
-      method: 'POST',
-      header: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-      data: reqData,
-      success: (res) => {
-        if (res.data.code === 200) {
-          wx.showToast({ title: '入场成功', icon: 'success' })
-          setTimeout(() => wx.navigateBack(), 1500)
-        } else {
-          wx.showToast({ title: res.data.message, icon: 'none' })
-        }
-      },
-      complete: () => this.setData({ submitting: false })
-    })
+    request.post('/vehicle/enter', reqData).then(() => {
+      wx.showToast({ title: '入场成功', icon: 'success' })
+      setTimeout(() => wx.navigateBack(), 1500)
+    }).catch(() => {}).finally(() => this.setData({ submitting: false }))
   }
 })

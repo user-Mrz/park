@@ -19,6 +19,18 @@ public class RegisterDTO {
 
     private String plateNumber;
 
+    /** 学号 / 工号（学生、教师、职工必填，需管理员审核） */
+    private String userNo;
+
+    /** 1学生 2教师 3职工 4访客 5家长，默认 1 学生 */
+    private Integer identityType;
+
+    /** 院系 / 部门 */
+    private String department;
+
+    /** 班级 */
+    private String className;
+
     @NotBlank(message = "Captcha key is required")
     private String captchaKey;
 

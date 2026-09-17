@@ -7,9 +7,13 @@ import java.util.Map;
 
 public interface AdminService {
     // User management
-    Page<User> getUsers(int page, int pageSize, String keyword, Integer status);
-    User getUserById(Long id);
+    Page<User> getUsers(int page, int pageSize, String keyword, Integer status,
+                        Integer identityType, Integer identityStatus);
+    /** 用户详情：账号资料 + 业务统计（停车/预约/充值/消费） */
+    Map<String, Object> getUserById(Long id);
     void updateUserStatus(Long id, Integer status);
+    /** 校园身份审核：1通过 2驳回 0改为待审核 */
+    void updateUserIdentity(Long id, Integer identityStatus, String remark);
     java.math.BigDecimal getTotalUserBalance();
     // Reservation management
     Page<Reservation> getAllReservations(int page, int pageSize, Integer status);

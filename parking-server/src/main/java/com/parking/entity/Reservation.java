@@ -16,7 +16,9 @@ public class Reservation {
     @TableId(type = IdType.ASSIGN_ID)
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long spotId;
     private String reservationNo;
     private LocalDateTime startTime;
@@ -27,4 +29,11 @@ public class Reservation {
     private String cancelReason;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    /** 展示用：车位编号 */
+    @com.baomidou.mybatisplus.annotation.TableField(exist = false)
+    private String spotCode;
+    /** 展示用：车位所属校园分区/区域 */
+    @com.baomidou.mybatisplus.annotation.TableField(exist = false)
+    private String spotArea;
 }

@@ -35,4 +35,11 @@ public class VehicleController {
     public R<?> current() {
         return R.ok(vehicleService.getCurrentParking(UserContext.getUserId()));
     }
+
+    @Operation(summary = "Get my violation records")
+    @GetMapping("/violations")
+    public R<?> myViolations(@RequestParam(defaultValue = "1") int page,
+                             @RequestParam(defaultValue = "10") int pageSize) {
+        return R.ok(vehicleService.getMyViolations(UserContext.getUserId(), page, pageSize));
+    }
 }

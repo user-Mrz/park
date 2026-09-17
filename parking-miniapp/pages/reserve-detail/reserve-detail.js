@@ -1,4 +1,4 @@
-const app = getApp()
+import request from '../../utils/request.js'
 
 Page({
   data: {
@@ -29,25 +29,13 @@ Page({
   },
 
   async loadDetail(id) {
-    const token = wx.getStorageSync('token')
-    if (!token) { this.setData({ loading: false }); return }
+    if (!wx.getStorageSync('token')) { this.setData({ loading: false }); return }
     this.setData({ loading: true })
-    wx.request({
-      url: app.globalData.baseUrl + '/reservation/' + id,
-      header: { 'Authorization': 'Bearer ' + token },
-      success: (res) => {
-        if (res.data.code === 200) {
-          const r = res.data.data
-          this.setData(Object.assign({ reservation: r, loading: false }, this.computeStatus(r.status)))
-        } else {
-          wx.showToast({ title: res.data.message || '加载失败', icon: 'none' })
-          this.setData({ loading: false })
-        }
-      },
-      fail: () => {
-        wx.showToast({ title: '网络异常', icon: 'none' })
-        this.setData({ loading: false })
-      }
+    request.get('/reservation/' + id).then((res) => {
+      const r = res.data
+      this.setData(Object.assign({ reservation: r, loading: false }, this.computeStatus(r.status)))
+    }).catch(() => {
+      this.setData({ loading: false })
     })
   },
 
@@ -70,77 +58,49 @@ Page({
   },
 
   doCancel(id) {
-    const token = wx.getStorageSync('token')
     this.setData({ cancelling: true })
-    wx.request({
-      url: app.globalData.baseUrl + '/reservation/cancel/' + id,
-      method: 'POST',
-      header: { 'Authorization': 'Bearer ' + token },
-      success: (res) => {
-        if (res.data.code === 200) {
-          wx.showToast({ title: '预约已取消', icon: 'success' })
-          const r = this.data.reservation
-          r.status = 3
-          this.setData(Object.assign({ reservation: r }, this.computeStatus(3)))
-        } else {
-          wx.showToast({ title: res.data.message, icon: 'none' })
-        }
-      },
-      complete: () => this.setData({ cancelling: false })
-    })
+    request.post('/reservation/cancel/' + id).then(() => {
+      wx.showToast({ title: '预约已取消', icon: 'success' })
+      const r = this.data.reservation
+      r.status = 3
+      this.setData(Object.assign({ reservation: r }, this.computeStatus(3)))
+    }).catch(() => {}).finally(() => this.setData({ cancelling: false }))
   },
 
   handleEnter() {
     const r = this.data.reservation
     if (!r) return
-    const token = wx.getStorageSync('token')
-    if (!token) return
+    if (!wx.getStorageSync('token')) return
 
     // 先获取用户信息拿车牌号
-    wx.request({
-      url: app.globalData.baseUrl + '/user/info',
-      header: { 'Authorization': 'Bearer ' + token },
-      success: (infoRes) => {
-        if (infoRes.data.code !== 200) return
-        const user = infoRes.data.data
-        const plateNumber = user.plateNumber || ''
-        if (!plateNumber) {
-          wx.showModal({
-            title: '提示',
-            content: '请先在个人中心设置车牌号',
-            confirmText: '去设置',
-            success(modalRes) {
-              if (modalRes.confirm) wx.switchTab({ url: '/pages/mine/mine' })
-            }
-          })
-          return
-        }
-        this.doEnter(r, plateNumber, token)
+    request.get('/user/info').then((infoRes) => {
+      const user = infoRes.data
+      const plateNumber = user.plateNumber || ''
+      if (!plateNumber) {
+        wx.showModal({
+          title: '提示',
+          content: '请先在个人中心设置车牌号',
+          confirmText: '去设置',
+          success(modalRes) {
+            if (modalRes.confirm) wx.switchTab({ url: '/pages/mine/mine' })
+          }
+        })
+        return
       }
-    })
+      this.doEnter(r, plateNumber)
+    }).catch(() => {})
   },
 
-  doEnter(r, plateNumber, token) {
+  doEnter(r, plateNumber) {
     this.setData({ entering: true })
-    wx.request({
-      url: app.globalData.baseUrl + '/vehicle/enter',
-      method: 'POST',
-      header: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-      data: {
-        spotId: r.spotId,
-        reservationId: r.id,
-        plateNumber: plateNumber
-      },
-      success: (res) => {
-        if (res.data.code === 200) {
-          r.status = 2
-          this.setData(Object.assign({ reservation: r }, this.computeStatus(2)))
-          wx.showToast({ title: '入场成功，预约已完成', icon: 'success' })
-        } else {
-          wx.showToast({ title: res.data.message, icon: 'none' })
-        }
-      },
-      complete: () => this.setData({ entering: false })
-    })
+    request.post('/vehicle/enter', {
+      spotId: r.spotId,
+      reservationId: r.id,
+      plateNumber: plateNumber
+    }).then(() => {
+      r.status = 2
+      this.setData(Object.assign({ reservation: r }, this.computeStatus(2)))
+      wx.showToast({ title: '入场成功，预约已完成', icon: 'success' })
+    }).catch(() => {}).finally(() => this.setData({ entering: false }))
   }
 })

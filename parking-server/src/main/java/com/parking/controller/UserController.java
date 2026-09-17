@@ -2,15 +2,21 @@ package com.parking.controller;
 
 import com.parking.common.R;
 import com.parking.common.UserContext;
-import com.parking.dto.PageDTO;
+import com.parking.dto.PasswordDTO;
 import com.parking.dto.RechargeDTO;
 import com.parking.dto.UpdateUserDTO;
+import com.parking.dto.VisitReportDTO;
+import com.parking.dto.WechatLoginDTO;
 import com.parking.service.UserService;
+import com.parking.service.VisitReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 @Tag(name = "User", description = "User APIs")
 @RestController
@@ -19,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final VisitReportService visitReportService;
 
     @Operation(summary = "Get user profile")
     @GetMapping("/info")
@@ -26,10 +33,61 @@ public class UserController {
         return R.ok(userService.getById(UserContext.getUserId()));
     }
 
-    @Operation(summary = "Update user profile")
+    @Operation(summary = "Update user profile (nickname / phone / plate / avatar)")
     @PutMapping("/info")
     public R<?> updateInfo(@RequestBody UpdateUserDTO dto) {
-        userService.updateInfo(UserContext.getUserId(), dto);
+        return R.ok(userService.updateInfo(UserContext.getUserId(), dto));
+    }
+
+    @Operation(summary = "Change login password")
+    @PutMapping("/password")
+    public R<?> changePassword(@RequestBody PasswordDTO dto) {
+        userService.changePassword(UserContext.getUserId(), dto);
+        return R.ok();
+    }
+
+    @Operation(summary = "Upload user avatar")
+    @PostMapping("/avatar")
+    public R<?> uploadAvatar(@RequestParam("file") MultipartFile file) {
+        String url = userService.saveAvatar(UserContext.getUserId(), file);
+        return R.ok(Map.of("url", url));
+    }
+
+    @Operation(summary = "Bind WeChat account to current user")
+    @PostMapping("/bind-wechat")
+    public R<?> bindWechat(@RequestBody WechatLoginDTO dto) {
+        return R.ok(userService.bindWechat(UserContext.getUserId(), dto));
+    }
+
+    @Operation(summary = "Unbind WeChat account from current user")
+    @PostMapping("/unbind-wechat")
+    public R<?> unbindWechat() {
+        return R.ok(userService.unbindWechat(UserContext.getUserId()));
+    }
+
+    @Operation(summary = "Get campus identity benefits (rate / free minutes / daily quota)")
+    @GetMapping("/benefits")
+    public R<?> benefits() {
+        return R.ok(userService.benefits(UserContext.getUserId()));
+    }
+
+    @Operation(summary = "Submit visitor / parent vehicle report")
+    @PostMapping("/visit-report")
+    public R<?> createVisitReport(@RequestBody VisitReportDTO dto) {
+        return R.ok(visitReportService.create(UserContext.getUserId(), dto));
+    }
+
+    @Operation(summary = "My visitor / parent vehicle reports")
+    @GetMapping("/visit-reports")
+    public R<?> myVisitReports(@RequestParam(defaultValue = "1") int page,
+                               @RequestParam(defaultValue = "10") int pageSize) {
+        return R.ok(visitReportService.myReports(UserContext.getUserId(), page, pageSize));
+    }
+
+    @Operation(summary = "Cancel my visitor / parent vehicle report")
+    @PostMapping("/visit-report/{id}/cancel")
+    public R<?> cancelVisitReport(@PathVariable Long id) {
+        visitReportService.cancel(UserContext.getUserId(), id);
         return R.ok();
     }
 

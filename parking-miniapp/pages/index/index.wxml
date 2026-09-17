@@ -1,7 +1,7 @@
 <view class="container">
   <!-- Header -->
   <view class="header">
-    <view class="header-title">停车车位预约和停车场入场功能界面</view>
+    <view class="header-title">用户校园停车小程序</view>
     <view class="header-balance" wx:if="{{userInfo}}">
       余额：<text class="balance-amount">¥{{userInfo.balance || '0.00'}}</text>
     </view>

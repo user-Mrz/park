@@ -1,0 +1,25 @@
+<view class="container">
+  <view class="card" wx:if="{{!isLoggedIn}}">
+    <view class="tip">请先登录后查看违规记录</view>
+    <button class="primary-btn" bindtap="goLogin">去登录</button>
+  </view>
+
+  <block wx:else>
+    <view class="card">
+      <view class="card-title">我的违规记录</view>
+      <view class="tip">超时占用、违规区域停放等行为会记录在此；累计违规可能被列入车辆黑名单。</view>
+      <view class="tip" wx:if="{{loading}}">加载中…</view>
+      <view class="tip" wx:elif="{{list.length === 0}}">暂无违规记录，请继续保持规范停放 👍</view>
+
+      <view class="violation-item" wx:for="{{list}}" wx:key="id">
+        <view class="item-head">
+          <text class="item-plate">{{item.plateNumber || '-'}}</text>
+          <text class="item-status {{item.handledCls}}">{{item.handledText}}</text>
+        </view>
+        <view class="item-line">类型：{{item.typeLabel}}　扣分：{{item.points}} 分</view>
+        <view class="item-line">{{item.description}}</view>
+        <view class="item-line">记录时间：{{item.timeText}}</view>
+      </view>
+    </view>
+  </block>
+</view>

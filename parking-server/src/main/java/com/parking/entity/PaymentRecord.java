@@ -16,7 +16,9 @@ public class PaymentRecord {
     @TableId(type = IdType.ASSIGN_ID)
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long vehicleRecordId;
     private BigDecimal amount;
     private BigDecimal balanceBefore;

@@ -1,7 +1,7 @@
 <view class="login-container">
   <view class="login-card">
     <view class="app-logo">🅿️</view>
-    <view class="app-name">停车场</view>
+    <view class="app-name">用户校园停车小程序</view>
     <view class="app-desc">智能停车，轻松出行</view>
 
     <!-- Phone Login -->
@@ -21,6 +21,23 @@
     <block wx:if="{{loginType === 'register'}}">
       <view class="input-group"><input class="input" value="{{phone}}" type="number" maxlength="11" placeholder="手机号" bindinput="onInput" data-field="phone"/></view>
       <view class="input-group"><input class="input" value="{{password}}" password maxlength="20" placeholder="密码（至少6位）" bindinput="onInput" data-field="password"/></view>
+      <view class="input-group">
+        <picker mode="selector" range="{{identityLabels}}" value="{{identityIndex}}" bindchange="onIdentityChange">
+          <view class="picker-input">校园身份：{{identityLabels[identityIndex]}}</view>
+        </picker>
+      </view>
+      <view class="input-group" wx:if="{{identityIndex < 3}}">
+        <input class="input" value="{{userNo}}" placeholder="学号/工号（需管理员审核）" bindinput="onInput" data-field="userNo"/>
+      </view>
+      <view class="input-group" wx:if="{{identityIndex < 3}}">
+        <picker wx:if="{{deptNames.length > 0}}" mode="selector" range="{{deptNames}}" value="{{deptIndex}}" bindchange="onDeptChange">
+          <view class="picker-input">学院/部门：{{department || '请选择'}}</view>
+        </picker>
+        <input wx:else class="input" value="{{department}}" placeholder="院系/部门" bindinput="onInput" data-field="department"/>
+      </view>
+      <view class="input-group" wx:if="{{identityIndex < 3}}">
+        <input class="input" value="{{className}}" placeholder="班级（选填，如 计算机2101班）" bindinput="onInput" data-field="className"/>
+      </view>
       <view class="input-group"><input class="input" value="{{nickname}}" placeholder="昵称（选填）" bindinput="onInput" data-field="nickname"/></view>
       <view class="input-group"><input class="input" value="{{plateNumber}}" placeholder="车牌号（选填）" bindinput="onInput" data-field="plateNumber"/></view>
       <view class="captcha-row">
@@ -32,7 +49,8 @@
       <view class="switch-row"><text>已有账号？</text><text class="link" bindtap="switchType" data-type="phone">去登录</text></view>
     </block>
 
-    <view class="divider"><text>其他登录方式</text></view>
-    <button class="wechat-btn" bindtap="handleWechatLogin">微信一键登录</button>
+    <view class="divider"><text>{{isLoggedIn ? '账号绑定' : '其他登录方式'}}</text></view>
+    <button class="wechat-btn" bindtap="handleWechatLogin">{{isLoggedIn ? '绑定微信到当前账号' : '微信一键登录'}}</button>
+    <view class="bind-tip" wx:if="{{isLoggedIn}}">已登录状态点击将把当前微信绑定到本账号（不会新建账号）</view>
   </view>
 </view>

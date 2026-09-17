@@ -1,24 +1,24 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { create } from 'zustand'
 import { login as loginApi } from '@/api/auth'
 
-export const useUserStore = defineStore('user', () => {
-  const token = ref(localStorage.getItem('admin_token') || '')
-  const userInfo = ref<any>(null)
+interface UserState {
+  token: string
+  userInfo: any
+  login: (username: string, password: string, captchaKey: string, captchaCode: string) => Promise<any>
+  logout: () => void
+}
 
-  async function login(username: string, password: string, captchaKey: string, captchaCode: string) {
+export const useUserStore = create<UserState>((set) => ({
+  token: localStorage.getItem('admin_token') || '',
+  userInfo: null,
+  async login(username, password, captchaKey, captchaCode) {
     const res: any = await loginApi({ username, password, captchaKey, captchaCode })
-    token.value = res.data.token
-    userInfo.value = res.data
     localStorage.setItem('admin_token', res.data.token)
+    set({ token: res.data.token, userInfo: res.data })
     return res.data
-  }
-
-  function logout() {
-    token.value = ''
-    userInfo.value = null
+  },
+  logout() {
     localStorage.removeItem('admin_token')
+    set({ token: '', userInfo: null })
   }
-
-  return { token, userInfo, login, logout }
-})
+}))

@@ -1,5 +1,7 @@
+# 说明：数据库/Redis 连接与 JWT 密钥均支持环境变量覆盖（${VAR:默认值}）。
+# 本地开发直接用默认值即可；部署到服务器时请通过环境变量注入真实凭据，不要把生产密码写进仓库。
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
 
 spring:
   application:
@@ -7,9 +9,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/parking_system?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
-    username: root
-    password: 123456
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/parking_system?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:123456}
     hikari:
       minimum-idle: 5
       maximum-pool-size: 20
@@ -18,9 +20,9 @@ spring:
 
   data:
     redis:
-      host: localhost
-      port: 6379
-      password:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
       database: 0
       timeout: 3000ms
       lettuce:
@@ -33,6 +35,11 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: Asia/Shanghai
     default-property-inclusion: non_null
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/*.xml
@@ -51,8 +58,11 @@ knife4j:
 
 parking:
   jwt:
-    secret: parking-system-secret-key-2024-parking-lot-management-jwt-token
+    # 生产环境请通过环境变量 JWT_SECRET 注入随机密钥
+    secret: ${JWT_SECRET:parking-system-secret-key-2024-parking-lot-management-jwt-token}
     expiration: 86400000
     admin-expiration: 7200000
   reservation:
     grace-period-minutes: 15
+  # 上传文件存储目录（头像等），相对路径基于后端启动目录
+  upload-dir: ./uploads

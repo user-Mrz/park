@@ -1,6 +1,8 @@
 package com.parking.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -27,6 +29,7 @@ public class SpotOverviewDTO {
 
     @Data
     public static class SpotInfo {
+        @JsonSerialize(using = ToStringSerializer.class)
         private Long id;
         private String spotCode;
         private String area;
@@ -37,7 +40,9 @@ public class SpotOverviewDTO {
 
     @Data
     public static class ParkedVehicle {
+        @JsonSerialize(using = ToStringSerializer.class)
         private Long recordId;
+        @JsonSerialize(using = ToStringSerializer.class)
         private Long spotId;
         private String spotCode;
         private String plateNumber;
@@ -50,8 +55,11 @@ public class SpotOverviewDTO {
 
     @Data
     public static class ActiveReservation {
+        @JsonSerialize(using = ToStringSerializer.class)
         private Long id;
+        @JsonSerialize(using = ToStringSerializer.class)
         private Long userId;
+        @JsonSerialize(using = ToStringSerializer.class)
         private Long spotId;
         private String reservationNo;
         private String nickname;

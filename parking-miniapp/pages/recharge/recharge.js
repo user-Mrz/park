@@ -1,4 +1,4 @@
-const app = getApp()
+import request from '../../utils/request.js'
 
 Page({
   data: {
@@ -14,19 +14,12 @@ Page({
   },
 
   loadUser() {
-    const token = wx.getStorageSync('token')
-    if (!token) return
-    wx.request({
-      url: app.globalData.baseUrl + '/user/info',
-      header: { 'Authorization': 'Bearer ' + token },
-      success: (res) => {
-        if (res.data.code === 200) {
-          const info = res.data.data
-          this.setData({ userInfo: info })
-          wx.setStorageSync('userInfo', JSON.stringify(info))
-        }
-      }
-    })
+    if (!wx.getStorageSync('token')) return
+    request.get('/user/info').then((res) => {
+      const info = res.data
+      this.setData({ userInfo: info })
+      wx.setStorageSync('userInfo', JSON.stringify(info))
+    }).catch(() => {})
   },
 
   onInput(e) {
@@ -43,22 +36,10 @@ Page({
     const finalAmount = this.data.customAmount ? Number(this.data.customAmount) : this.data.amount
     if (finalAmount <= 0) { wx.showToast({ title: '请选择或输入金额', icon: 'none' }); return }
     this.setData({ submitting: true })
-    const token = wx.getStorageSync('token')
-    wx.request({
-      url: app.globalData.baseUrl + '/user/recharge',
-      method: 'POST',
-      header: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-      data: { amount: finalAmount, payMethod: 'wechat' },
-      success: (res) => {
-        if (res.data.code === 200) {
-          wx.showToast({ title: '充值成功', icon: 'success' })
-          this.loadUser()
-          setTimeout(() => wx.navigateBack(), 1500)
-        } else {
-          wx.showToast({ title: res.data.message, icon: 'none' })
-        }
-      },
-      complete: () => this.setData({ submitting: false })
-    })
+    request.post('/user/recharge', { amount: finalAmount, payMethod: 'wechat' }).then(() => {
+      wx.showToast({ title: '充值成功', icon: 'success' })
+      this.loadUser()
+      setTimeout(() => wx.navigateBack(), 1500)
+    }).catch(() => {}).finally(() => this.setData({ submitting: false }))
   }
 })

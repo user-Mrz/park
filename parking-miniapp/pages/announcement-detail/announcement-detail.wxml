@@ -1,0 +1,46 @@
+<view class="container">
+  <!-- 加载中 -->
+  <view class="card" wx:if="{{loading}}">
+    <view class="tip">加载公告中...</view>
+  </view>
+
+  <!-- 失败重试 -->
+  <view class="card" wx:elif="{{errorMsg}}">
+    <view class="tip error">{{errorMsg}}</view>
+    <button class="primary-btn" bindtap="onRetry">点击重试</button>
+    <button class="plain-btn" bindtap="copyLink" wx:if="{{announcement.attachment}}">复制附件下载链接</button>
+  </view>
+
+  <block wx:elif="{{announcement}}">
+    <!-- 正文 -->
+    <view class="card">
+      <view class="detail-title">{{announcement.title}}</view>
+      <view class="detail-meta">
+        <text class="meta-item">👤 {{announcement.publisher}}</text>
+        <text class="meta-item">🕐 {{announcement.publishTimeText}}</text>
+        <text class="meta-item">👁 {{announcement.viewCount}} 次浏览</text>
+      </view>
+      <!-- white-space: pre-wrap 保留正文换行与分段 -->
+      <view class="detail-content">{{announcement.content || '（无正文）'}}</view>
+    </view>
+
+    <!-- 附件区域：没有附件时整块不渲染 -->
+    <view class="card attach-card" wx:if="{{announcement.hasAttachment}}">
+      <view class="attach-title">附件</view>
+      <view class="attach-row">
+        <view class="attach-icon">{{announcement.attachment.icon}}</view>
+        <view class="attach-info">
+          <view class="attach-name">{{announcement.attachment.name}}</view>
+          <view class="attach-sub">
+            <text class="attach-ext">{{announcement.attachment.extLabel}}</text>
+            <text class="attach-size" wx:if="{{announcement.attachment.sizeText}}">{{announcement.attachment.sizeText}}</text>
+          </view>
+        </view>
+      </view>
+
+      <button class="primary-btn" bindtap="openAttachment">{{announcement.attachment.actionText}}</button>
+      <button class="plain-btn" bindtap="copyLink">复制下载链接</button>
+      <view class="attach-tip">若无法在小程序内打开（如 zip/rar），可复制链接到浏览器下载</view>
+    </view>
+  </block>
+</view>

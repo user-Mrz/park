@@ -1,6 +1,8 @@
 <view class="container">
-  <!-- 头像与概览 -->
-  <view class="head-card">
+  <!-- 头像与概览：品牌页头 -->
+  <view class="head-card brand-gradient">
+    <view class="header-deco header-deco-1"></view>
+    <view class="header-deco header-deco-2"></view>
     <view class="avatar-wrap" bindtap="chooseAvatar">
       <image wx:if="{{avatar}}" class="avatar-img" src="{{fileBase}}{{avatar}}" mode="aspectFill" />
       <view wx:else class="avatar-emoji">👤</view>

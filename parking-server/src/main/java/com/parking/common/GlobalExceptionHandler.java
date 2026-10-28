@@ -6,6 +6,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @Slf4j
 @RestControllerAdvice
@@ -21,9 +22,15 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public R<?> handleBindException(BindException e) {
         String msg = e.getBindingResult().getFieldErrors().stream()
-                .map(err -> err.getField() + ": " + err.getDefaultMessage())
-                .reduce((a, b) -> a + "; " + b).orElse("Parameter validation failed");
+                .map(err -> err.getDefaultMessage() == null ? err.getField() : err.getDefaultMessage())
+                .reduce((a, b) -> a + "; " + b).orElse("参数校验失败");
         return R.fail(400, msg);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public R<?> handleMaxUploadSize(MaxUploadSizeExceededException e) {
+        log.warn("Upload size exceeded: {}", e.getMessage());
+        return R.fail(400, "上传文件过大，附件请控制在 20MB 以内");
     }
 
     @ExceptionHandler(Exception.class)

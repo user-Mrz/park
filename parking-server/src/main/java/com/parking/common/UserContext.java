@@ -4,6 +4,8 @@ public class UserContext {
     private static final ThreadLocal<Long> USER_ID = new ThreadLocal<>();
     private static final ThreadLocal<String> USER_PHONE = new ThreadLocal<>();
     private static final ThreadLocal<String> USER_ROLE = new ThreadLocal<>();
+    /** 身份域：admin=后台管理员，user=小程序用户 */
+    private static final ThreadLocal<String> USER_TYPE = new ThreadLocal<>();
 
     public static void setUserId(Long id) { USER_ID.set(id); }
     public static Long getUserId() { return USER_ID.get(); }
@@ -11,5 +13,7 @@ public class UserContext {
     public static String getPhone() { return USER_PHONE.get(); }
     public static void setRole(String role) { USER_ROLE.set(role); }
     public static String getRole() { return USER_ROLE.get(); }
-    public static void clear() { USER_ID.remove(); USER_PHONE.remove(); USER_ROLE.remove(); }
+    public static void setUserType(String userType) { USER_TYPE.set(userType); }
+    public static String getUserType() { return USER_TYPE.get(); }
+    public static void clear() { USER_ID.remove(); USER_PHONE.remove(); USER_ROLE.remove(); USER_TYPE.remove(); }
 }

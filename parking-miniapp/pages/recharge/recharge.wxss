@@ -1,13 +1,13 @@
 .container { padding: 30rpx; }
-.recharge-card { background: #fff; border-radius: 16rpx; padding: 30rpx; }
-.balance-section { text-align: center; padding: 30rpx 0; border-bottom: 1rpx solid #f0f0f0; margin-bottom: 30rpx; }
-.balance-label { display: block; font-size: 26rpx; color: #999; margin-bottom: 8rpx; }
-.balance-value { font-size: 56rpx; font-weight: bold; color: #333; }
-.amount-title { font-size: 28rpx; color: #666; margin-bottom: 16rpx; }
+.recharge-card { background: var(--card); border-radius: var(--radius-card); padding: 30rpx; box-shadow: var(--shadow-card); }
+.balance-section { text-align: center; padding: 30rpx 0; border-bottom: 1rpx solid var(--hairline); margin-bottom: 30rpx; }
+.balance-label { display: block; font-size: 26rpx; color: var(--ink-3); margin-bottom: 8rpx; }
+.balance-value { font-size: 56rpx; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.amount-title { font-size: 28rpx; color: var(--ink-2); margin-bottom: 16rpx; }
 .amount-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16rpx; margin-bottom: 30rpx; }
-.amount-item { text-align: center; padding: 24rpx; background: #f8f8f8; border-radius: 12rpx; font-size: 32rpx; color: #333; border: 2rpx solid transparent; }
-.amount-item.active { border-color: #007AFF; color: #007AFF; background: #f0f7ff; }
+.amount-item { text-align: center; padding: 24rpx; background: var(--bg); border-radius: 16rpx; font-size: 32rpx; font-weight: 500; color: var(--ink); border: 2rpx solid transparent; font-variant-numeric: tabular-nums; transition: border-color 0.15s ease, background 0.15s ease; }
+.amount-item.active { border-color: var(--brand-start); color: var(--brand-deep); background: var(--brand-tint); }
 .custom-amount { display: flex; align-items: center; gap: 16rpx; margin-bottom: 30rpx; }
-.custom-label { font-size: 26rpx; color: #666; white-space: nowrap; }
-.custom-input { flex: 1; height: 72rpx; border: 2rpx solid #e6e6e6; border-radius: 12rpx; padding: 0 20rpx; font-size: 28rpx; }
-.recharge-btn { width: 100%; background: #007AFF; color: #fff; border-radius: 12rpx; font-size: 32rpx; }
+.custom-label { font-size: 26rpx; color: var(--ink-2); white-space: nowrap; }
+.custom-input { flex: 1; height: 72rpx; border: 2rpx solid var(--hairline); border-radius: 16rpx; padding: 0 20rpx; font-size: 28rpx; }
+.recharge-btn { width: 100%; }

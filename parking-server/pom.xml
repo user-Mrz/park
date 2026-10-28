@@ -13,7 +13,7 @@
 
     <groupId>com.parking</groupId>
     <artifactId>parking-server</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
     <name>parking-server</name>
     <description>Parking Lot Management System Backend</description>
 
@@ -41,7 +41,16 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <!-- 车位状态实时推送：原生 WebSocket（管理端与小程序共用 /ws/spots） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
 
         <!-- MySQL Driver -->
@@ -91,6 +100,13 @@
             <version>${hutool.version}</version>
         </dependency>
 
+        <!-- OSHI：硬件监控（CPU/内存/磁盘采集，参考若依服务器监控） -->
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+            <version>6.4.13</version>
+        </dependency>
+
         <!-- Easy Captcha for human verification -->
         <dependency>
             <groupId>com.github.whvcse</groupId>
@@ -111,6 +127,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
     </dependencies>
 

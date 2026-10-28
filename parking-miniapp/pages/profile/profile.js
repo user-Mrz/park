@@ -1,5 +1,6 @@
 import request, { FILE_BASE, upload } from '../../utils/request.js'
 import { getDeviceId, getWxCode } from '../../utils/device.js'
+import { requestAndReport, SubscribeScenes } from '../../utils/subscribe.js'
 
 const PHONE_RE = /^1[3-9]\d{9}$/
 const PLATE_RE = /^[\u4e00-\u9fa5][A-Z][A-Z0-9]{5,6}$/
@@ -300,7 +301,7 @@ Page({
     const ok = await this.confirm(
       '提交校园身份',
       identityType <= 3
-        ? '学生/教师/职工身份需管理员审核通过后才能预约车位并享受校园优惠，确定提交？'
+        ? '学生/教师/职工身份将先由校园管理系统自动核验，核验通过立即生效，未查询到时转管理员审核，确定提交？'
         : '访客/家长身份无需审核，将按访客费率计费，确定提交？'
     )
     if (!ok) return
@@ -316,7 +317,15 @@ Page({
         department: u.department || '',
         className: u.className || ''
       })
-      wx.showToast({ title: identityType <= 3 ? '已提交，等待审核' : '身份已更新', icon: 'success' })
+      const pending = identityType <= 3 && Number(u.identityStatus) === 0
+      wx.showToast({
+        title: identityType <= 3 ? (pending ? '已提交，等待审核' : '身份已自动认证') : '身份已更新',
+        icon: 'success'
+      })
+      // 仅待人工审核时需要订阅审核结果通知（自动认证无需等待）
+      if (pending) {
+        requestAndReport(SubscribeScenes.SCENE_IDENTITY_RESULT, String(u.id || ''))
+      }
       this.loadBenefits()
     } catch (e) {
       this.setData({ savingIdentity: false })

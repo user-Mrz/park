@@ -1,0 +1,105 @@
+<view class="container">
+  <!-- 未登录：不请求接口，只给登录引导 -->
+  <view class="card login-tip" wx:if="{{!isLoggedIn}}">
+    <view class="tip-icon">🔒</view>
+    <view class="tip-title">登录后可查看潮汐车位</view>
+    <view class="tip-desc">潮汐车位是学校在开学迎新、考试、比赛等高峰期临时开放的停车位</view>
+    <button class="primary-btn" bindtap="goLogin">立即登录</button>
+  </view>
+
+  <block wx:else>
+
+  <!-- 顶部说明：可提前预约天数以后端 advanceDays 为准 -->
+  <view class="card intro-card">
+    <view class="intro-title">🌊 潮汐车位</view>
+    <view class="intro-desc">潮汐车位是管理员在开学迎新、考试、比赛等高峰期临时开放的停车位，有明确的开放时段：开放前只能预约，开放后凭预约或直接入场停放。</view>
+    <view class="intro-tag">可提前 {{advanceDays}} 天预约</view>
+  </view>
+
+  <view class="card" wx:if="{{loading}}">
+    <view class="tip">加载潮汐车位中...</view>
+  </view>
+
+  <!-- 接口失败且没有旧数据时才占位，下拉刷新失败不清空已有列表 -->
+  <view class="card" wx:elif="{{errorMsg && batches.length === 0}}">
+    <view class="tip error">{{errorMsg}}</view>
+    <button class="primary-btn" bindtap="onRetry">点击重试</button>
+  </view>
+
+  <view class="card empty-card" wx:elif="{{batches.length === 0}}">
+    <view class="empty-icon">🅿️</view>
+    <view class="empty-text">当前没有开放的潮汐车位，敬请留意开学、考试等高峰期的临时通知</view>
+  </view>
+
+  <block wx:else>
+    <view class="batch-card" wx:for="{{batches}}" wx:key="id">
+      <view class="batch-head">
+        <text class="batch-name">{{item.batchName}}</text>
+        <text class="phase-tag phase-{{item.phaseCls}}">{{item.phaseText}}</text>
+      </view>
+
+      <view class="batch-row">
+        <text class="label">区域</text>
+        <text class="value">{{item.area}}{{item.floor ? ' · ' + item.floor : ''}}</text>
+      </view>
+      <view class="batch-row">
+        <text class="label">单价</text>
+        <text class="value price">¥{{item.priceText}}/小时</text>
+      </view>
+      <view class="batch-row" wx:if="{{item.zoneIdentityNames}}">
+        <text class="label">允许身份</text>
+        <text class="value">{{item.zoneIdentityNames}}</text>
+      </view>
+      <view class="batch-row" wx:if="{{item.freeText}}">
+        <text class="label">免费时长</text>
+        <text class="value">{{item.freeText}}</text>
+      </view>
+      <view class="time-line">开放 {{item.openTimeText}} ~ {{item.closeTimeText}}</view>
+      <view class="remark" wx:if="{{item.remark}}">备注：{{item.remark}}</view>
+
+      <!-- 阶段状态行 -->
+      <view class="status-bar {{item.phase}}">{{item.statusText}}</view>
+
+      <!-- 车位数统计 -->
+      <view class="stats-row">
+        <view class="stat">
+          <text class="stat-num">{{item.spotCount}}</text>
+          <text class="stat-label">总数</text>
+        </view>
+        <view class="stat">
+          <text class="stat-num free">{{item.vacantCount}}</text>
+          <text class="stat-label">空闲</text>
+        </view>
+        <view class="stat">
+          <text class="stat-num reserved">{{item.reservedCount}}</text>
+          <text class="stat-label">已预约</text>
+        </view>
+      </view>
+
+      <!-- 车位小格子：按 status 上色，空闲车位可点击去预约 -->
+      <block wx:if="{{item.spots.length > 0}}">
+        <view class="spots-title">车位状态（共 {{item.spots.length}} 个）</view>
+        <view class="spots-grid">
+          <view class="spot-item spot-{{s.statusCls}}" wx:for="{{item.spots}}" wx:key="id" wx:for-item="s"
+                bindtap="goReserveSpot" data-batch-id="{{item.id}}" data-spot-id="{{s.id}}" data-status="{{s.status}}">
+            <text class="spot-code">{{s.spotCode}}</text>
+          </view>
+        </view>
+        <view class="legend">
+          <view class="legend-item"><view class="dot dot-free"></view><text>空闲可预约</text></view>
+          <view class="legend-item"><view class="dot dot-occupied"></view><text>已占用</text></view>
+          <view class="legend-item"><view class="dot dot-reserved"></view><text>已预约</text></view>
+          <view class="legend-item"><view class="dot dot-locked"></view><text>维护中</text></view>
+        </view>
+      </block>
+
+      <button class="primary-btn" wx:if="{{item.canReserve}}" bindtap="goReserve" data-id="{{item.id}}">去预约</button>
+      <block wx:else>
+        <button class="primary-btn" disabled="{{true}}">暂不可预约</button>
+        <view class="btn-tip">{{item.reserveTip}}</view>
+      </block>
+    </view>
+  </block>
+
+  </block>
+</view>

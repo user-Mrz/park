@@ -1,0 +1,40 @@
+<view class="container">
+  <!-- 加载中 -->
+  <view class="card" wx:if="{{loading}}">
+    <view class="tip">加载公告中...</view>
+  </view>
+
+  <!-- 失败重试：仅在没有任何数据时占位，下拉刷新失败不清空已有列表 -->
+  <view class="card" wx:elif="{{errorMsg && records.length === 0}}">
+    <view class="tip error">{{errorMsg}}</view>
+    <button class="primary-btn" bindtap="onRetry">点击重试</button>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="card empty-card" wx:elif="{{records.length === 0}}">
+    <view class="empty-icon">📢</view>
+    <view class="empty-text">暂无公告</view>
+    <view class="empty-sub">管理员发布公告后会在这里显示，可下拉刷新查看</view>
+  </view>
+
+  <block wx:else>
+    <view class="notice-card" wx:for="{{records}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+      <view class="notice-title">{{item.title}}</view>
+
+      <view class="notice-meta">
+        <text class="notice-time">{{item.timeText}}</text>
+        <text class="notice-tag" wx:if="{{item.hasAttachment}}">📎 {{item.attachmentName}}</text>
+      </view>
+
+      <view class="notice-summary" wx:if="{{item.summary}}">{{item.summary}}</view>
+
+      <view class="notice-foot">
+        <text class="notice-more">查看详情</text>
+        <text class="notice-arrow">›</text>
+      </view>
+    </view>
+
+    <view class="list-foot" wx:if="{{hasMore}}">上拉加载更多</view>
+    <view class="list-foot" wx:else>没有更多公告了</view>
+  </block>
+</view>

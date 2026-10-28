@@ -1,0 +1,33 @@
+<view class="container">
+  <view class="tip" wx:if="{{loading}}">加载中…</view>
+
+  <block wx:else>
+    <view class="card">
+      <view class="card-title">校园停车规则</view>
+      <view class="tip">以下规则由管理员维护，保存后立即生效。学生/教师/职工/访客/家长按身份差异化计费与限制；违规记录将累计扣分，影响后续停车权限。</view>
+    </view>
+
+    <view class="card" wx:for="{{groups}}" wx:for-item="group" wx:key="title">
+      <view class="card-title">{{group.title}}</view>
+      <view class="tip" wx:if="{{group.desc}}">{{group.desc}}</view>
+      <view class="rule-grid">
+        <view class="rule-item" wx:for="{{group.items}}" wx:for-item="item" wx:key="label">
+          <view class="rule-label">{{item.label}}<text wx:if="{{item.hint}}" class="rule-hint"> · {{item.hint}}</text></view>
+          <view class="rule-value">{{item.value}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="card-title warn">违规规则与扣分标准</view>
+      <view class="tip">超时宽限期当前为 <text class="grace">{{grace}}</text> 分钟；超 120 分钟记 2 分，否则 1 分；违规记录需管理员处理后方可解除。</view>
+      <view class="vio-item" wx:for="{{violations}}" wx:key="type">
+        <view class="vio-head">
+          <text class="vio-name">{{item.name}}</text>
+          <text class="vio-points">扣 {{item.points}}</text>
+        </view>
+        <view class="vio-desc">{{item.desc}}</view>
+      </view>
+    </view>
+  </block>
+</view>

@@ -1,9 +1,15 @@
 <view class="login-container">
-  <view class="login-card">
+  <!-- 品牌页头（§5.1）：渐变 + 装饰圆 + 产品名 -->
+  <view class="login-header brand-gradient">
+    <view class="header-deco header-deco-1"></view>
+    <view class="header-deco header-deco-2"></view>
     <view class="app-logo">🅿️</view>
     <view class="app-name">用户校园停车小程序</view>
     <view class="app-desc">智能停车，轻松出行</view>
+  </view>
 
+  <!-- 白色表单卡上移与页头重叠 -->
+  <view class="login-card">
     <!-- Phone Login -->
     <block wx:if="{{loginType === 'phone'}}">
       <view class="input-group"><input class="input" value="{{phone}}" type="number" maxlength="11" placeholder="请输入手机号" bindinput="onInput" data-field="phone"/></view>
@@ -13,7 +19,7 @@
         <image wx:if="{{captchaImg}}" src="{{captchaImg}}" class="captcha-img" bindtap="loadCaptcha"/>
         <view wx:else class="captcha-placeholder" bindtap="loadCaptcha">点击获取</view>
       </view>
-      <button class="login-btn" bindtap="handleLogin">登 录</button>
+      <button class="login-btn btn-primary" bindtap="handleLogin">登 录</button>
       <view class="switch-row"><text>没有账号？</text><text class="link" bindtap="switchType" data-type="register">立即注册</text></view>
     </block>
 
@@ -45,7 +51,7 @@
         <image wx:if="{{captchaImg}}" src="{{captchaImg}}" class="captcha-img" bindtap="loadCaptcha"/>
         <view wx:else class="captcha-placeholder" bindtap="loadCaptcha">点击获取</view>
       </view>
-      <button class="login-btn" bindtap="handleRegister">注 册</button>
+      <button class="login-btn btn-primary" bindtap="handleRegister">注 册</button>
       <view class="switch-row"><text>已有账号？</text><text class="link" bindtap="switchType" data-type="phone">去登录</text></view>
     </block>
 

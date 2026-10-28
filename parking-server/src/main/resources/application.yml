@@ -7,6 +7,18 @@ spring:
   application:
     name: parking-server
 
+  # 定时任务线程池：默认单线程会被 60 秒级任务阻塞，车位状态 1 秒 flush 需要独立线程
+  task:
+    scheduling:
+      pool:
+        size: 4
+
+  # 定时任务表初始化（幂等）：确保 t_scheduled_job 存在并写入内置任务
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/scheduled_job.sql
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/parking_system?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
@@ -22,7 +34,7 @@ spring:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:}
+      password: ${REDIS_PASSWORD:123456}
       database: 0
       timeout: 3000ms
       lettuce:
@@ -38,12 +50,13 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: 5MB
-      max-request-size: 10MB
+      # 公告附件最大 20MB（头像另有 2MB 的独立校验）
+      max-file-size: 20MB
+      max-request-size: 30MB
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/*.xml
-  type-aliases-package: com.parking.entity
+  type-aliases-package: com.parking.system.domain
   global-config:
     db-config:
       id-type: assign_id
@@ -64,5 +77,32 @@ parking:
     admin-expiration: 7200000
   reservation:
     grace-period-minutes: 15
+  cache:
+    # 车位状态缓存总开关（运行时可由 SystemConfig 表 cache_enabled 覆盖）
+    enabled: true
+    # 高峰时段，多段逗号分隔；空字符串表示全程启用 Redis 缓存路径
+    # 运行时可由 SystemConfig 表 cache_peak_hours 覆盖
+    peak-hours: "07:00-09:00,16:30-19:00"
+    # Redis 与 MySQL 对账任务周期（毫秒）
+    reconcile-interval-ms: 30000
   # 上传文件存储目录（头像等），相对路径基于后端启动目录
   upload-dir: ./uploads
+  # 管理端跨域来源白名单（逗号分隔）；部署到正式域名时通过 CORS_ALLOWED_ORIGINS 覆盖
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173}
+  # 微信小程序凭据（生产环境通过环境变量注入；开发期留空则订阅消息发送自动降级为 log-only）
+  wechat:
+    appid: ${WX_APPID:}
+    secret: ${WX_SECRET:}
+  # 第三方校园管理系统单点认证（服务端对接）：配置 app-id 与 secret 后启用，
+  # 未配置时 /api/open/campus/sso/login 返回 503，原有认证方式不受影响。
+  campus-sso:
+    app-id: ${CAMPUS_SSO_APP_ID:}
+    secret: ${CAMPUS_SSO_SECRET:}
+  # 出站身份核验：学生/教师/职工提交学号/工号后，向校园管理系统查询并自动认证；
+  # 未配置、查无此人或调用失败时自动转为后台人工审核（原审核流程保留）。
+  campus-verify:
+    url: ${CAMPUS_VERIFY_URL:}
+    app-id: ${CAMPUS_VERIFY_APP_ID:}
+    secret: ${CAMPUS_VERIFY_SECRET:}
+    timeout-ms: ${CAMPUS_VERIFY_TIMEOUT_MS:3000}

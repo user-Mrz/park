@@ -1,0 +1,84 @@
+/* 潮汐车位（高峰期临时车位）列表页 */
+.container { padding: 20rpx; }
+.card { background: var(--card); border-radius: var(--radius-card); padding: 28rpx; margin-bottom: 20rpx; box-shadow: var(--shadow-card); }
+.tip { font-size: 24rpx; color: var(--ink-3); line-height: 1.7; padding: 10rpx 0; }
+.tip.error { color: var(--danger); }
+.primary-btn { width: 100%; margin-top: 10rpx; }
+.primary-btn[disabled] { opacity: 0.5; }
+.btn-tip { font-size: 22rpx; color: var(--ink-3); text-align: center; line-height: 1.5; margin-top: 8rpx; }
+
+/* 未登录引导 */
+.login-tip { text-align: center; padding: 60rpx 40rpx; }
+.tip-icon { font-size: 64rpx; opacity: 0.6; }
+.tip-title { font-size: 32rpx; font-weight: 600; color: var(--ink); margin-top: 16rpx; }
+.tip-desc { font-size: 24rpx; color: var(--ink-3); line-height: 1.6; margin: 12rpx 0 30rpx; }
+
+/* 顶部说明 */
+.intro-title { font-size: 32rpx; font-weight: 600; color: var(--ink); }
+.intro-desc { font-size: 24rpx; color: var(--ink-2); line-height: 1.7; margin-top: 12rpx; }
+.intro-tag { display: inline-block; font-size: 22rpx; color: var(--brand-deep); background: var(--brand-tint); border-radius: var(--radius-pill); padding: 6rpx 20rpx; margin-top: 16rpx; }
+
+/* 空状态 */
+.empty-card { text-align: center; padding: 60rpx 40rpx; }
+.empty-icon { font-size: 64rpx; opacity: 0.6; }
+.empty-text { font-size: 26rpx; color: var(--ink-3); line-height: 1.7; margin-top: 16rpx; }
+
+/* 批次卡片：白卡 + 左侧潮蓝色条（§6.3） */
+.batch-card { background: var(--card); border-radius: var(--radius-card); padding: 28rpx; margin-bottom: 20rpx; box-shadow: var(--shadow-card); border-left: 8rpx solid var(--zone-tidal); }
+.batch-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16rpx; }
+.batch-name { flex: 1; min-width: 0; font-size: 32rpx; font-weight: 600; color: var(--ink); margin-right: 12rpx; }
+.phase-tag { flex-shrink: 0; font-size: 22rpx; padding: 4rpx 16rpx; border-radius: var(--radius-pill); background: rgba(144, 147, 153, 0.12); color: var(--info); }
+.phase-tag.phase-upcoming { background: rgba(230, 162, 60, 0.1); color: var(--warn); }
+.phase-tag.phase-open { background: rgba(52, 179, 126, 0.1); color: var(--ok); }
+.phase-tag.phase-ended { background: rgba(144, 147, 153, 0.12); color: var(--info); }
+
+.batch-row { display: flex; padding: 8rpx 0; font-size: 26rpx; }
+.batch-row .label { width: 140rpx; color: var(--ink-3); flex-shrink: 0; }
+.batch-row .value { flex: 1; min-width: 0; color: var(--ink); }
+.batch-row .value.price { color: var(--danger); font-weight: 600; font-variant-numeric: tabular-nums; }
+.remark { font-size: 22rpx; color: var(--ink-3); line-height: 1.6; margin-top: 8rpx; }
+
+/* 开放时段 */
+.time-line { font-size: 26rpx; color: var(--ink); background: var(--bg); border-radius: 16rpx; padding: 14rpx 20rpx; margin: 12rpx 0; font-variant-numeric: tabular-nums; }
+
+/* 阶段状态行：upcoming 橙 / open 绿 / ended 灰 */
+.status-bar { font-size: 24rpx; line-height: 1.6; padding: 14rpx 20rpx; border-radius: 16rpx; margin-bottom: 16rpx; }
+.status-bar.upcoming { background: rgba(230, 162, 60, 0.1); color: var(--warn); }
+.status-bar.open { background: rgba(52, 179, 126, 0.1); color: var(--ok); }
+.status-bar.ended { background: rgba(144, 147, 153, 0.12); color: var(--info); }
+
+/* 车位数统计：顶部以潮汐波纹分割（§4.2） */
+.stats-row {
+  display: flex;
+  border-top: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='6' viewBox='0 0 24 6'%3E%3Cpath d='M0 3 Q6 0.5 12 3 T24 3' fill='none' stroke='%2345B8D6' stroke-width='1'/%3E%3C/svg%3E") repeat-x left top;
+  background-size: 24rpx 6rpx;
+  padding-top: 24rpx;
+  margin-top: 6rpx;
+}
+.stat { flex: 1; text-align: center; }
+.stat-num { display: block; font-size: 34rpx; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.stat-num.free { color: var(--ok); }
+.stat-num.reserved { color: var(--zone-tidal); }
+.stat-label { display: block; font-size: 22rpx; color: var(--ink-3); margin-top: 4rpx; }
+
+/* 车位小格子 */
+.spots-title { font-size: 26rpx; font-weight: 600; color: var(--ink); margin: 20rpx 0 12rpx; }
+/* 固定 4 列 grid：grid 的 fr 列宽由容器分配，任何屏宽都不会溢出换行（与首页一致） */
+.spots-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16rpx; }
+.spot-item { background: var(--card); border-radius: 12rpx; padding: 16rpx 6rpx; min-width: 0; text-align: center; border: 1rpx solid var(--hairline); box-sizing: border-box; }
+.spot-free { border-bottom: 4rpx solid var(--ok); }
+.spot-occupied { border-bottom: 4rpx solid var(--danger); background: rgba(245, 108, 108, 0.06); }
+.spot-reserved { border-bottom: 4rpx solid var(--zone-tidal); background: rgba(69, 184, 214, 0.08); }
+.spot-locked { border-bottom: 4rpx solid var(--info); background: rgba(144, 147, 153, 0.08); }
+.spot-code { display: block; font-size: 24rpx; font-weight: 600; color: var(--ink); white-space: nowrap; letter-spacing: 1rpx; font-variant-numeric: tabular-nums; }
+.spot-occupied .spot-code, .spot-locked .spot-code { color: var(--ink-3); }
+
+/* 车位颜色图例 */
+.legend { display: flex; flex-wrap: wrap; gap: 24rpx; margin-top: 16rpx; }
+.legend-item { display: flex; align-items: center; font-size: 22rpx; color: var(--ink-3); }
+.dot { width: 16rpx; height: 16rpx; border-radius: 50%; margin-right: 8rpx; }
+.dot-free { background: var(--ok); }
+.dot-occupied { background: var(--danger); }
+.dot-reserved { background: var(--zone-tidal); }
+.dot-locked { background: var(--info); }

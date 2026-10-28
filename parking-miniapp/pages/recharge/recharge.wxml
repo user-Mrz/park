@@ -15,6 +15,6 @@
       <input class="custom-input" value="{{customAmount}}" type="digit" placeholder="输入金额" bindinput="onInput" data-field="customAmount"/>
     </view>
 
-    <button class="recharge-btn" bindtap="handleRecharge" loading="{{submitting}}">立即充值</button>
+    <button class="recharge-btn btn-primary" bindtap="handleRecharge" loading="{{submitting}}">立即充值</button>
   </view>
 </view>

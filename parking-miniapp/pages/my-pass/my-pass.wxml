@@ -1,0 +1,88 @@
+<view class="container">
+  <!-- 月卡权益卡片（顶部大卡） -->
+  <view class="hero-card brand-gradient">
+    <view class="hero-deco"></view>
+    <view class="hero-head">
+      <text class="hero-title">🎫 长租 / 月卡</text>
+      <text class="hero-sub">有效期内车牌免按次计费</text>
+    </view>
+    <view class="hero-current" wx:if="{{currentPass}}">
+      <text class="hero-badge">{{currentPass.passTypeLabel}}</text>
+      <text class="hero-expire">到期 {{currentPass.expireDate}}</text>
+      <text class="hero-plate">车牌 {{currentPass.plateNumber}}</text>
+      <view class="hero-remind" bindtap="subscribeExpireRemind">开启到期提醒</view>
+    </view>
+    <view class="hero-empty" wx:else>
+      <text>当前没有生效的月卡，开通即可享受长租优惠</text>
+    </view>
+  </view>
+
+  <!-- 账户余额 + 充值入口 -->
+  <view class="balance-row">
+    <view class="balance-info">
+      <text class="balance-label">账户余额</text>
+      <text class="balance-num">¥{{balance}}</text>
+    </view>
+    <view class="balance-btn" bindtap="goRecharge">充值 ›</view>
+  </view>
+
+  <!-- 卡类型选择 -->
+  <view class="card section">
+    <view class="section-title">选择卡类型</view>
+    <view class="pass-list">
+      <view class="pass-option {{selectedType === 1 ? 'pass-active' : ''}}" bindtap="onTypeTap" data-type="1">
+        <text class="pass-label">月卡 30 天</text>
+        <text class="pass-price">¥{{prices.monthly || '199.00'}}</text>
+      </view>
+      <view class="pass-option {{selectedType === 2 ? 'pass-active' : ''}}" bindtap="onTypeTap" data-type="2">
+        <text class="pass-label">季卡 90 天</text>
+        <text class="pass-price">¥{{prices.quarterly || '499.00'}}</text>
+        <text class="pass-save">省 ¥98</text>
+      </view>
+      <view class="pass-option {{selectedType === 3 ? 'pass-active' : ''}}" bindtap="onTypeTap" data-type="3">
+        <text class="pass-label">年卡 365 天</text>
+        <text class="pass-price">¥{{prices.yearly || '1599.00'}}</text>
+        <text class="pass-save">省 ¥789</text>
+      </view>
+    </view>
+    <view class="pass-plate">
+      <text class="pass-plate-label">生效车牌：</text>
+      <text class="pass-plate-value">{{plateNumber || '未绑定（请先到账号信息页设置）'}}</text>
+    </view>
+  </view>
+
+  <!-- 开通按钮 -->
+  <view class="open-section">
+    <view class="open-amount">实付 ¥{{selectedType === 1 ? (prices.monthly || '199.00') : (selectedType === 2 ? (prices.quarterly || '499.00') : (prices.yearly || '1599.00'))}}</view>
+    <view class="open-btn {{openPassing ? 'btn-disabled' : 'btn-primary'}}" bindtap="handleOpen">
+      {{openPassing ? '开通中...' : (currentPass ? '续费' : '立即开通')}}
+    </view>
+  </view>
+
+  <!-- 历史记录 -->
+  <view class="card section" wx:if="{{history.length}}">
+    <view class="section-title">历史记录</view>
+    <view class="history-list">
+      <view class="history-item" wx:for="{{history}}" wx:key="id">
+        <view class="history-head">
+          <text class="history-badge">{{item.passTypeLabel}}</text>
+          <text class="history-status {{item.status === 1 ? 'status-active' : ''}}">{{item.status === 1 ? '生效中' : (item.status === 2 ? '已过期' : '已退款')}}</text>
+        </view>
+        <text class="history-plate">车牌 {{item.plateNumber}}</text>
+        <text class="history-date">{{item.startDate}} ~ {{item.expireDate}}</text>
+        <text class="history-price">实付 ¥{{item.pricePaid}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 规则说明 -->
+  <view class="card section">
+    <view class="section-title">使用说明</view>
+    <view class="rules">
+      <text class="rule-item">· 月卡有效期内，指定车牌停车免按次计费（出场结算 0 元）</text>
+      <text class="rule-item">· 预约费不豁免（预约仍需单独支付锁定车位的费用）</text>
+      <text class="rule-item">· 到期前续费会叠加到期日，无需等过期</text>
+      <text class="rule-item">· 一辆车牌同时只能有一张生效月卡</text>
+    </view>
+  </view>
+</view>

@@ -1,23 +1,23 @@
 .container { padding: 20rpx; }
-.card { background: #fff; border-radius: 16rpx; padding: 28rpx; margin-bottom: 20rpx; }
-.card-title { font-size: 30rpx; font-weight: bold; color: #333; margin-bottom: 20rpx; }
-.form-item { display: flex; align-items: center; padding: 18rpx 0; border-bottom: 1rpx solid #f5f5f5; }
-.form-label { width: 150rpx; font-size: 28rpx; color: #666; }
-.form-input { flex: 1; font-size: 28rpx; color: #333; }
-.picker-value { font-size: 28rpx; color: #333; }
-.tip { font-size: 22rpx; color: #999; line-height: 1.6; margin: 14rpx 0 4rpx; }
-.tip.warn { color: #E6A23C; }
-.primary-btn { width: 100%; background: #007AFF; color: #fff; border-radius: 12rpx; font-size: 30rpx; margin-top: 20rpx; }
+.card { background: var(--card); border-radius: var(--radius-card); padding: 28rpx; margin-bottom: 20rpx; box-shadow: var(--shadow-card); }
+.card-title { font-size: 30rpx; font-weight: 600; color: var(--ink); margin-bottom: 20rpx; }
+.form-item { display: flex; align-items: center; padding: 18rpx 0; border-bottom: 1rpx solid var(--hairline); }
+.form-label { width: 150rpx; font-size: 28rpx; color: var(--ink-2); }
+.form-input { flex: 1; font-size: 28rpx; color: var(--ink); }
+.picker-value { font-size: 28rpx; color: var(--ink); }
+.tip { font-size: 22rpx; color: var(--ink-3); line-height: 1.6; margin: 14rpx 0 4rpx; }
+.tip.warn { color: var(--warn); }
+.primary-btn { width: 100%; margin-top: 20rpx; }
 
-.empty-tip { font-size: 26rpx; color: #999; text-align: center; padding: 30rpx 0; }
-.report-item { border-top: 1rpx solid #f5f5f5; padding: 20rpx 0; }
+.empty-tip { font-size: 26rpx; color: var(--ink-3); text-align: center; padding: 30rpx 0; }
+.report-item { border-top: 1rpx solid var(--hairline); padding: 20rpx 0; }
 .report-item:first-child { border-top: none; }
 .report-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8rpx; }
-.report-plate { font-size: 30rpx; font-weight: bold; color: #333; }
-.report-status { font-size: 22rpx; padding: 2rpx 12rpx; border-radius: 20rpx; background: #f0f2f5; color: #909399; }
-.report-status.pending { background: #FFF4E6; color: #E6A23C; }
-.report-status.ok { background: #E8F8EE; color: #52C41A; }
-.report-status.error { background: #FDEDED; color: #F56C6C; }
-.report-line { font-size: 24rpx; color: #666; line-height: 1.7; }
+.report-plate { font-size: 30rpx; font-weight: 600; color: var(--ink); letter-spacing: 2rpx; font-variant-numeric: tabular-nums; }
+.report-status { font-size: 22rpx; padding: 4rpx 14rpx; border-radius: var(--radius-pill); background: rgba(144, 147, 153, 0.12); color: var(--info); }
+.report-status.pending { background: rgba(230, 162, 60, 0.1); color: var(--warn); }
+.report-status.ok { background: rgba(52, 179, 126, 0.1); color: var(--ok); }
+.report-status.error { background: rgba(245, 108, 108, 0.1); color: var(--danger); }
+.report-line { font-size: 24rpx; color: var(--ink-2); line-height: 1.7; }
 .report-actions { margin-top: 10rpx; text-align: right; }
-.cancel-btn { font-size: 24rpx; color: #F56C6C; }
+.cancel-btn { font-size: 24rpx; color: var(--danger); }

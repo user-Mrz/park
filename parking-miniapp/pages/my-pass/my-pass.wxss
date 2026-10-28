@@ -1,0 +1,108 @@
+.container { padding: 30rpx; }
+
+/* 顶部品牌卡 */
+.hero-card {
+  position: relative;
+  padding: 40rpx;
+  border-radius: var(--radius-card);
+  color: #fff;
+  overflow: hidden;
+  box-shadow: 0 8rpx 24rpx rgba(91, 141, 239, 0.35);
+  margin-bottom: 20rpx;
+}
+.hero-deco {
+  position: absolute; right: -40rpx; top: -40rpx;
+  width: 240rpx; height: 240rpx; border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+}
+.hero-head { position: relative; z-index: 1; margin-bottom: 24rpx; }
+.hero-title { display: block; font-size: 40rpx; font-weight: 600; }
+.hero-sub { display: block; font-size: 26rpx; opacity: 0.85; margin-top: 6rpx; }
+.hero-current { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 8rpx; }
+.hero-badge {
+  display: inline-block; padding: 6rpx 20rpx;
+  background: rgba(255,255,255,0.2); border-radius: var(--radius-pill);
+  font-size: 24rpx; width: fit-content; margin-bottom: 8rpx;
+}
+.hero-expire { font-size: 28rpx; opacity: 0.95; }
+.hero-plate { font-size: 26rpx; opacity: 0.8; }
+.hero-remind {
+  width: fit-content;
+  margin-top: 16rpx;
+  padding: 10rpx 28rpx;
+  font-size: 24rpx;
+  color: #fff;
+  border: 2rpx solid rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-pill);
+}
+.hero-empty { position: relative; z-index: 1; font-size: 28rpx; opacity: 0.85; }
+
+/* 余额行 */
+.balance-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 28rpx 30rpx; background: var(--card);
+  border-radius: var(--radius-card); box-shadow: var(--shadow-card);
+  margin-bottom: 20rpx;
+}
+.balance-info { display: flex; flex-direction: column; }
+.balance-label { font-size: 24rpx; color: var(--ink-3); }
+.balance-num { font-size: 40rpx; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.balance-btn {
+  font-size: 28rpx; font-weight: 500;
+  color: var(--brand-deep); padding: 10rpx 24rpx;
+  border: 2rpx solid var(--brand-start); border-radius: var(--radius-pill);
+}
+
+/* 通用 section 卡片 */
+.card {
+  background: var(--card); border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card); padding: 30rpx; margin-bottom: 20rpx;
+}
+.section-title {
+  font-size: 30rpx; font-weight: 600; color: var(--ink);
+  margin-bottom: 24rpx;
+}
+
+/* 卡类型选择 */
+.pass-list { display: flex; gap: 16rpx; margin-bottom: 24rpx; }
+.pass-option {
+  flex: 1; padding: 24rpx 16rpx; text-align: center;
+  background: var(--bg); border-radius: 16rpx;
+  border: 2rpx solid transparent;
+  transition: border-color 0.15s ease;
+}
+.pass-active { border-color: var(--brand-start); background: var(--brand-tint); }
+.pass-label { display: block; font-size: 26rpx; color: var(--ink-2); margin-bottom: 8rpx; }
+.pass-price { display: block; font-size: 32rpx; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.pass-save { display: block; font-size: 22rpx; color: var(--ok); margin-top: 4rpx; }
+.pass-plate { display: flex; align-items: center; padding-top: 20rpx; border-top: 1rpx solid var(--hairline); }
+.pass-plate-label { font-size: 26rpx; color: var(--ink-3); }
+.pass-plate-value { font-size: 26rpx; color: var(--ink); font-weight: 500; }
+
+/* 开通按钮 */
+.open-section {
+  display: flex; align-items: center; gap: 20rpx;
+  margin: 30rpx 0;
+}
+.open-amount { font-size: 26rpx; color: var(--ink-2); }
+.open-btn {
+  flex: 1; height: 88rpx; line-height: 88rpx;
+  text-align: center; font-size: 32rpx; font-weight: 600;
+  border-radius: var(--radius-pill);
+}
+.btn-disabled { opacity: 0.6; }
+
+/* 历史记录 */
+.history-list { display: flex; flex-direction: column; gap: 20rpx; }
+.history-item { padding: 24rpx; background: var(--bg); border-radius: 16rpx; }
+.history-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12rpx; }
+.history-badge { font-size: 26rpx; font-weight: 500; color: var(--brand-deep); }
+.history-status { font-size: 22rpx; color: var(--ink-3); }
+.status-active { color: var(--ok); }
+.history-plate { display: block; font-size: 26rpx; color: var(--ink); margin-bottom: 4rpx; }
+.history-date { display: block; font-size: 24rpx; color: var(--ink-3); margin-bottom: 4rpx; }
+.history-price { display: block; font-size: 24rpx; color: var(--ink-2); }
+
+/* 规则说明 */
+.rules { display: flex; flex-direction: column; gap: 12rpx; }
+.rule-item { font-size: 26rpx; color: var(--ink-2); line-height: 1.6; }

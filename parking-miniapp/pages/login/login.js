@@ -1,5 +1,6 @@
 const app = getApp()
 import { getDeviceId, getWxCode } from '../../utils/device.js'
+import { cacheClear } from '../../utils/pageCache.js'
 
 Page({
   data: {
@@ -247,6 +248,8 @@ Page({
   _onLoginSuccess(result) {
     wx.setStorageSync('token', result.data.token)
     wx.setStorageSync('userInfo', JSON.stringify(result.data))
+    // 清空页面内存缓存，避免把上一个账号的概览/余额渲染出来
+    cacheClear()
     wx.showToast({ title: '登录成功', icon: 'success' })
     setTimeout(() => {
       wx.switchTab({ url: '/pages/index/index' })

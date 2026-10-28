@@ -1,0 +1,26 @@
+/* 公告详情 */
+.container { padding: 20rpx; }
+.card { background: var(--card); border-radius: var(--radius-card); padding: 28rpx; margin-bottom: 20rpx; box-shadow: var(--shadow-card); }
+.tip { font-size: 24rpx; color: var(--ink-3); line-height: 1.7; padding: 10rpx 0; }
+.tip.error { color: var(--danger); }
+.primary-btn { width: 100%; margin-top: 10rpx; }
+.plain-btn { width: 100%; margin-top: 16rpx; }
+
+/* 标题与元信息 */
+.detail-title { font-size: 36rpx; font-weight: 600; color: var(--ink); line-height: 1.5; }
+.detail-meta { display: flex; flex-wrap: wrap; gap: 20rpx; margin-top: 16rpx; padding-bottom: 20rpx; border-bottom: 1rpx solid var(--hairline); }
+.meta-item { font-size: 22rpx; color: var(--ink-3); }
+/* 保留正文换行与分段 */
+.detail-content { font-size: 28rpx; color: var(--ink); line-height: 1.8; margin-top: 24rpx; white-space: pre-wrap; word-break: break-word; }
+
+/* 附件区域 */
+.attach-card { border-left: 8rpx solid var(--brand-start); }
+.attach-title { font-size: 28rpx; font-weight: 600; color: var(--ink); margin-bottom: 18rpx; }
+.attach-row { display: flex; align-items: center; background: var(--bg); border-radius: 16rpx; padding: 20rpx; }
+.attach-icon { font-size: 48rpx; margin-right: 20rpx; }
+.attach-info { flex: 1; min-width: 0; }
+.attach-name { font-size: 28rpx; color: var(--ink); word-break: break-all; }
+.attach-sub { display: flex; align-items: center; gap: 16rpx; margin-top: 8rpx; }
+.attach-ext { font-size: 22rpx; color: var(--brand-deep); background: var(--brand-tint); border-radius: var(--radius-pill); padding: 2rpx 14rpx; }
+.attach-size { font-size: 22rpx; color: var(--ink-3); }
+.attach-tip { font-size: 22rpx; color: var(--ink-3); line-height: 1.6; margin-top: 16rpx; }

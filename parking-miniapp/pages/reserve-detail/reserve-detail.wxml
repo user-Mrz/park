@@ -26,11 +26,11 @@
       <view class="card-title">预约信息</view>
       <view class="info-row">
         <text class="info-label">预约编号</text>
-        <text class="info-value">{{reservation.reservationNo}}</text>
+        <text class="info-value mono-no">{{reservation.reservationNo}}</text>
       </view>
       <view class="info-row">
         <text class="info-label">预约车位</text>
-        <text class="info-value">#{{reservation.spotId}}</text>
+        <text class="spot-badge">#{{reservation.spotId}}</text>
       </view>
       <view class="info-row">
         <text class="info-label">开始时间</text>

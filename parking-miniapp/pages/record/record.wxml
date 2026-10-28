@@ -8,7 +8,7 @@
   <!-- Vehicle Records -->
   <view wx:if="{{tab === 0}}">
     <view class="record-card" wx:for="{{vehicleRecords}}" wx:key="id">
-      <view class="record-header"><text class="plate">{{item.plateNumber}}</text><text class="status">{{item.status === 0 ? '在场' : '已离场'}}</text></view>
+      <view class="record-header"><text class="plate plate-badge">{{item.plateNumber}}</text><text class="status">{{item.status === 0 ? '在场' : '已离场'}}</text></view>
       <view class="record-row"><text class="rl">入场</text><text>{{item.entryTime}}</text></view>
       <view class="record-row" wx:if="{{item.exitTime}}"><text class="rl">离场</text><text>{{item.exitTime}}</text></view>
       <view class="record-row" wx:if="{{item.totalFee}}"><text class="rl">费用</text><text class="fee-text">¥{{item.totalFee}}</text></view>
@@ -19,7 +19,7 @@
   <!-- Recharge Records -->
   <view wx:if="{{tab === 1}}">
     <view class="record-card" wx:for="{{rechargeRecords}}" wx:key="id">
-      <view class="record-row"><text class="rl">订单号</text><text>{{item.orderNo}}</text></view>
+      <view class="record-row"><text class="rl">订单号</text><text class="mono-no">{{item.orderNo}}</text></view>
       <view class="record-row"><text class="rl">金额</text><text class="amount-in">+¥{{item.amount}}</text></view>
       <view class="record-row"><text class="rl">时间</text><text>{{item.createdAt}}</text></view>
     </view>

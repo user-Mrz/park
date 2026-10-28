@@ -1,0 +1,27 @@
+/* 公告列表（tab 页） */
+.container { padding: 20rpx; }
+.card { background: var(--card); border-radius: var(--radius-card); padding: 28rpx; margin-bottom: 20rpx; box-shadow: var(--shadow-card); }
+.tip { font-size: 24rpx; color: var(--ink-3); line-height: 1.7; padding: 10rpx 0; }
+.tip.error { color: var(--danger); }
+.primary-btn { width: 100%; margin-top: 10rpx; }
+
+/* 空状态 */
+.empty-card { text-align: center; padding: 60rpx 40rpx; }
+.empty-icon { font-size: 64rpx; opacity: 0.6; }
+.empty-text { font-size: 30rpx; font-weight: bold; color: var(--ink-2); margin-top: 16rpx; }
+.empty-sub { font-size: 24rpx; color: var(--ink-3); line-height: 1.7; margin-top: 12rpx; }
+
+/* 公告卡片：白卡 + 左侧品牌色条（§6.2） */
+.notice-card { background: var(--card); border-radius: var(--radius-card); padding: 28rpx; margin-bottom: 20rpx; box-shadow: var(--shadow-card); border-left: 8rpx solid var(--brand-start); }
+.notice-title { font-size: 32rpx; font-weight: 600; color: var(--ink); line-height: 1.5; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.notice-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 16rpx; margin-top: 12rpx; }
+.notice-time { font-size: 22rpx; color: var(--ink-3); }
+/* 附件标记：长文件名截断，不撑破卡片（flex 子项需要 min-width:0 才能真正收缩） */
+.notice-tag { max-width: 100%; min-width: 0; font-size: 22rpx; color: var(--brand-deep); background: var(--brand-tint); border-radius: var(--radius-pill); padding: 4rpx 16rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.notice-summary { font-size: 26rpx; color: var(--ink-2); line-height: 1.7; margin-top: 14rpx; }
+.notice-foot { display: flex; justify-content: flex-end; align-items: center; margin-top: 16rpx; }
+.notice-more { font-size: 24rpx; color: var(--brand-deep); }
+.notice-arrow { font-size: 32rpx; color: var(--ink-3); margin-left: 8rpx; }
+
+/* 列表底部提示 */
+.list-foot { font-size: 22rpx; color: var(--ink-3); text-align: center; padding: 20rpx 0 40rpx; }

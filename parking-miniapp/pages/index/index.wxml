@@ -1,89 +1,153 @@
 <view class="container">
-  <!-- Header -->
+  <!-- Header：渐变背景 + 装饰圆 + 问候语 + 余额卡 + 校园余位环 -->
   <view class="header">
-    <view class="header-title">用户校园停车小程序</view>
-    <view class="header-balance" wx:if="{{userInfo}}">
-      余额：<text class="balance-amount">¥{{userInfo.balance || '0.00'}}</text>
+    <view class="header-deco header-deco-1"></view>
+    <view class="header-deco header-deco-2"></view>
+    <view class="header-greeting">
+      <text class="greeting-text">{{greeting}}</text>
+      <text class="greeting-sub" wx:if="{{userInfo}}">{{userInfo.nickname || '同学'}}，欢迎回来</text>
+      <text class="greeting-sub" wx:else>未登录</text>
+    </view>
+    <view class="header-assets" wx:if="{{userInfo}}">
+      <view class="balance-card">
+        <view class="balance-label">账户余额（元）</view>
+        <view class="balance-row">
+          <text class="balance-amount">{{userInfo.balance || '0.00'}}</text>
+          <view class="balance-action" bindtap="goRecharge">充值</view>
+        </view>
+      </view>
+      <!-- 校园余位环（§4.1 签名元素）：数据来自 /spot/overview 汇总，失败或未登录整块不渲染 -->
+      <view class="ring-wrap" wx:if="{{ringPercent >= 0}}">
+        <image class="ring-img" src="{{ringImage}}" mode="aspectFit"/>
+        <view class="ring-label">余位 {{vacantTotal}}</view>
+      </view>
+    </view>
+    <view class="balance-card balance-card-empty" wx:else>
+      <view class="balance-label">未登录</view>
+      <view class="balance-row">
+        <text class="balance-amount login-tip-text" bindtap="goLogin">立即登录</text>
+        <view class="balance-action" bindtap="goLogin">→</view>
+      </view>
     </view>
   </view>
 
-  <!-- Quick Actions -->
+  <!-- Quick Actions：白卡 + 彩色图标徽章（§5.4） -->
   <view class="actions-grid">
     <view class="action-card" bindtap="goReserve">
-      <view class="action-icon">📅</view>
+      <view class="icon-badge icon-badge-blue">📅</view>
       <text class="action-text">预约车位</text>
     </view>
     <view class="action-card" bindtap="goEnter">
-      <view class="action-icon">🚗</view>
+      <view class="icon-badge icon-badge-green">🚗</view>
       <text class="action-text">进入停车场</text>
     </view>
     <view class="action-card" bindtap="goExit">
-      <view class="action-icon">🏁</view>
+      <view class="icon-badge icon-badge-orange">🏁</view>
       <text class="action-text">离开停车场</text>
     </view>
     <view class="action-card" bindtap="goRecharge">
-      <view class="action-icon">💰</view>
+      <view class="icon-badge icon-badge-purple">💰</view>
       <text class="action-text">账户充值</text>
     </view>
   </view>
 
-  <!-- 正在停车（全部车辆） -->
+  <!-- 未登录：不展示任何停车信息，只给登录引导 -->
+  <view class="section login-tip" wx:if="{{needLogin}}">
+    <view class="tip-icon">🔒</view>
+    <view class="tip-title">登录后可查看停车信息</view>
+    <view class="tip-desc">为保护隐私，未登录时无法查看在场车辆、预约记录与车位使用情况</view>
+    <button class="tip-btn btn-primary" bindtap="goLogin">立即登录</button>
+  </view>
+
+  <!-- 已登录：以下均为"我"的数据（后端按当前账号过滤，不含其他车辆信息） -->
+  <block wx:if="{{!needLogin}}">
+
+  <!-- 当前身份与可见停车区域提示（RBAC）：接口失败时 permText 为空，整块不渲染 -->
+  <view class="section" wx:if="{{permText}}">
+    <view class="perm-hint">
+      <view class="perm-hint-icon">🎫</view>
+      <view class="perm-hint-text">{{permText}}</view>
+    </view>
+  </view>
+
+  <!-- 潮汐车位入口：仅在有可预约/可入场批次时出现，没有则整块不渲染 -->
+  <view class="section" wx:if="{{tidalCount > 0}}">
+    <view class="tidal-card" bindtap="goTidal">
+      <view class="tidal-icon">🌊</view>
+      <view class="tidal-body">
+        <view class="tidal-text">{{tidalText}}</view>
+        <view class="tidal-sub">点击查看潮汐车位开放时段与车位状态</view>
+      </view>
+      <view class="tidal-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- 我的在场车辆 -->
   <view class="section" wx:if="{{parkedVehicles.length > 0}}">
-    <view class="section-title">正在停车（{{parkedVehicles.length}}辆）</view>
+    <view class="section-title">我的车辆<text class="section-count">在场 {{parkedVehicles.length}} 辆</text></view>
     <view class="parking-card" wx:for="{{parkedVehicles}}" wx:key="recordId">
-      <view class="parking-row">
-        <text class="label">车牌号</text>
-        <text class="value bold">{{item.plateNumber}}</text>
+      <view class="parking-card-bar"></view>
+      <view class="parking-head">
+        <view class="plate-badge">{{item.plateNumber}}</view>
+        <view class="spot-badge">{{item.spotCode}}</view>
       </view>
-      <view class="parking-row">
-        <text class="label">车位</text>
-        <text class="value">{{item.spotCode}}</text>
-      </view>
-      <view class="parking-row">
-        <text class="label">用户</text>
-        <text class="value">{{item.nickname}}{{item.phone ? ' ' + item.phone : ''}}</text>
-      </view>
-      <view class="parking-row">
-        <text class="label">入场时间</text>
-        <text class="value">{{item.entryTime}}</text>
-      </view>
-      <view class="parking-row">
-        <text class="label">已停时长</text>
-        <text class="value highlight">{{item.durationText}}</text>
-      </view>
-    </view>
-  </view>
-  <view class="section" wx:else>
-    <view class="section-title">正在停车</view>
-    <view class="empty">暂无车辆停放</view>
-  </view>
-
-  <!-- 全部预约 -->
-  <view class="section">
-    <view class="section-title">全部预约（{{activeReservations.length}}个）</view>
-    <view wx:if="{{activeReservations.length === 0}}" class="empty">暂无预约记录</view>
-    <view class="reserve-card" wx:for="{{activeReservations}}" wx:key="id" bindtap="goReserveDetail" data-id="{{item.id}}">
-      <view class="reserve-header">
-        <text class="reserve-no">{{item.reservationNo}}</text>
-        <text class="reserve-status status-1">进行中</text>
-      </view>
-      <view class="reserve-detail"><text>{{item.nickname}} · 车位#{{item.spotId}} · {{item.startTime}}~{{item.endTime}}</text></view>
-      <view class="reserve-detail"><text>金额: ¥{{item.totalAmount}}</text></view>
-      <view class="reserve-arrow">›</view>
-    </view>
-  </view>
-
-  <!-- 全部车位（按区域分组） -->
-  <view class="section">
-    <view class="section-title">全部车位</view>
-    <view class="area-group" wx:for="{{areaGroups}}" wx:key="area">
-      <view class="area-title">{{item.area}}（{{item.spots.length}}个）</view>
-      <view class="spots-grid">
-        <view class="spot-item spot-status-{{s.status}}" wx:for="{{item.spots}}" wx:key="id" wx:for-item="s">
-          <text class="spot-code">{{s.spotCode}}</text>
-          <text class="spot-price">¥{{s.pricePerHour}}/h</text>
+      <view class="parking-info-grid">
+        <view class="parking-info-item">
+          <text class="info-label">用户</text>
+          <text class="info-value">{{item.nickname}}{{item.phone ? ' ' + item.phone : ''}}</text>
+        </view>
+        <view class="parking-info-item">
+          <text class="info-label">入场时间</text>
+          <text class="info-value">{{item.entryTime}}</text>
+        </view>
+        <view class="parking-info-item info-item-highlight">
+          <text class="info-label">已停时长</text>
+          <text class="info-value info-value-highlight">{{item.durationText}}</text>
         </view>
       </view>
     </view>
   </view>
+  <view class="section" wx:else>
+    <view class="section-title">我的车辆</view>
+    <view class="empty empty-with-icon">
+      <view class="empty-icon">🅿️</view>
+      <view class="empty-text">我的车辆暂无在场记录</view>
+    </view>
+  </view>
+
+  <!-- 我的预约 -->
+  <view class="section">
+    <view class="section-title">我的预约<text class="section-count">{{activeReservations.length}} 个</text></view>
+    <view wx:if="{{activeReservations.length === 0}}" class="empty empty-with-icon">
+      <view class="empty-icon">📋</view>
+      <view class="empty-text">暂无我的预约记录</view>
+    </view>
+    <view class="reserve-card" wx:for="{{activeReservations}}" wx:key="id" bindtap="goReserveDetail" data-id="{{item.id}}">
+      <view class="reserve-card-bar"></view>
+      <view class="reserve-card-body">
+        <view class="reserve-header">
+          <text class="reserve-no mono-no">{{item.reservationNo}}</text>
+          <text class="reserve-status status-1">进行中</text>
+        </view>
+        <view class="reserve-detail"><text>{{item.nickname}} · 车位#{{item.spotId}}</text></view>
+        <view class="reserve-detail reserve-time"><text>{{item.startTime}} ~ {{item.endTime}}</text></view>
+        <view class="reserve-amount-row"><text class="reserve-amount-label">金额</text><text class="reserve-amount">¥{{item.totalAmount}}</text></view>
+      </view>
+      <view class="reserve-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- 全部车位入口卡片：点击跳转到独立的车位页面 -->
+  <view class="section" bindtap="goSpots">
+    <view class="spots-entry-card">
+      <view class="spots-entry-icon">🅿️</view>
+      <view class="spots-entry-body">
+        <view class="spots-entry-title">全部车位</view>
+        <view class="spots-entry-desc">共 {{totalSpots}} 个车位，点击查看实时占用与空闲分布</view>
+      </view>
+      <view class="spots-entry-arrow">›</view>
+    </view>
+  </view>
+
+  </block>
 </view>

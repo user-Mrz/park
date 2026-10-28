@@ -1,0 +1,206 @@
+.container { padding: 0 0 40rpx; }
+
+/* ============ 顶部统计头 ============ */
+.page-header {
+  position: relative;
+  background: linear-gradient(135deg, var(--brand-start) 0%, var(--brand-mid) 55%, var(--brand-end) 100%);
+  padding: 40rpx 30rpx 50rpx;
+  color: #fff;
+  overflow: hidden;
+  border-radius: 0 0 32rpx 32rpx;
+}
+.page-header-deco {
+  position: absolute;
+  width: 220rpx;
+  height: 220rpx;
+  top: -60rpx;
+  right: -50rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+.stat-row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+.stat-item { text-align: center; flex: 1; }
+.stat-num {
+  display: block;
+  font-size: 56rpx;
+  font-weight: 600;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.stat-num-green { color: var(--ok); }
+.stat-label { display: block; font-size: 22rpx; opacity: 0.85; margin-top: 6rpx; }
+.stat-divider { width: 1rpx; height: 60rpx; background: rgba(255, 255, 255, 0.2); }
+
+/* ============ 当前身份与可见区域提示（RBAC，样式与首页一致） ============ */
+.perm-section { margin: 24rpx 20rpx 0; }
+.perm-hint {
+  display: flex;
+  align-items: flex-start;
+  background: linear-gradient(135deg, var(--card) 0%, var(--brand-tint) 100%);
+  border-radius: var(--radius-card);
+  padding: 22rpx 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(91, 141, 239, 0.1);
+  border-left: 8rpx solid var(--brand-start);
+}
+.perm-hint-icon { font-size: 30rpx; margin-right: 14rpx; line-height: 1.5; }
+.perm-hint-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 24rpx;
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+
+/* ============ 加载/错误状态 ============ */
+.status-box {
+  background: var(--card);
+  border-radius: var(--radius-card);
+  padding: 80rpx 30rpx;
+  text-align: center;
+  margin: 30rpx 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+}
+.loading-text { font-size: 28rpx; color: var(--ink-2); }
+.error-text { font-size: 28rpx; color: var(--danger); margin-bottom: 30rpx; }
+.retry-btn {
+  width: 200rpx; height: 64rpx; line-height: 64rpx;
+  background: linear-gradient(135deg, var(--brand-start) 0%, var(--brand-deep) 100%);
+  color: #fff;
+  border-radius: var(--radius-pill);
+  font-size: 26rpx;
+}
+
+/* ============ 搜索框 ============ */
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin: 24rpx 20rpx 16rpx;
+  background: var(--card);
+  border-radius: var(--radius-pill);
+  padding: 8rpx 8rpx 8rpx 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.04);
+}
+.search-icon { font-size: 24rpx; color: var(--ink-3); }
+.search-input {
+  flex: 1;
+  height: 60rpx;
+  line-height: 60rpx;
+  background: transparent;
+  font-size: 26rpx;
+  color: var(--ink);
+}
+.search-btn {
+  min-width: 100rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  text-align: center;
+  background: linear-gradient(135deg, var(--brand-start) 0%, var(--brand-deep) 100%);
+  color: #fff;
+  border-radius: var(--radius-pill);
+  font-size: 24rpx;
+  padding: 0 16rpx;
+}
+.search-hint { font-size: 22rpx; color: var(--ink-3); margin: 0 20rpx 16rpx; line-height: 1.5; }
+
+/* ============ 区域分组 ============ */
+.area-group { margin: 0 20rpx 20rpx; }
+.area-title {
+  display: flex;
+  align-items: center;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 14rpx;
+  padding: 12rpx 16rpx;
+  background: var(--card);
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.04);
+  border-left: 6rpx solid var(--brand-start);
+}
+/* 区域识别色圆点（分组数据含区域编码字段时在标题前启用） */
+.zone-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+.zone-dot-teach,
+.zone-dot-teaching { background: var(--zone-teach); }
+.zone-dot-library { background: var(--zone-library); }
+.zone-dot-dorm { background: var(--zone-dorm); }
+.zone-dot-gym { background: var(--zone-gym); }
+.zone-dot-visitor { background: var(--zone-visitor); }
+.zone-dot-tidal { background: var(--zone-tidal); }
+.zone-dot-default { background: var(--brand-start); }
+.area-name { flex: 1; min-width: 0; }
+.area-count {
+  font-size: 22rpx;
+  color: var(--brand-start);
+  background: var(--brand-tint);
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+  margin-left: 8rpx;
+}
+.area-arrow {
+  display: inline-block;
+  width: 28rpx; height: 28rpx;
+  line-height: 28rpx;
+  text-align: center;
+  margin-right: 8rpx;
+  font-size: 24rpx;
+  color: var(--brand-start);
+  transition: transform 0.2s ease;
+  transform: rotate(0deg);
+}
+.area-arrow.expanded { transform: rotate(90deg); }
+
+/* ============ 全部车位 grid ============ */
+.spots-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16rpx; }
+.spot-item {
+  background: var(--card);
+  border-radius: var(--radius-card);
+  padding: 22rpx 12rpx;
+  min-width: 0;
+  text-align: center;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+  border: 1rpx solid transparent;
+  transition: transform 0.15s ease;
+}
+.spot-item:active { transform: scale(0.95); }
+/* 状态色：空闲 ok / 占用 danger / 预约 warn，底色为语义色 10% rgba */
+.spot-status-0 {
+  border-bottom: 6rpx solid var(--ok);
+  background: linear-gradient(180deg, var(--card) 0%, rgba(52, 179, 126, 0.1) 100%);
+}
+.spot-status-1 {
+  border-bottom: 6rpx solid var(--danger);
+  background: linear-gradient(180deg, var(--card) 0%, rgba(245, 108, 108, 0.1) 100%);
+}
+.spot-status-2 {
+  border-bottom: 6rpx solid var(--warn);
+  background: linear-gradient(180deg, var(--card) 0%, rgba(230, 162, 60, 0.1) 100%);
+}
+.spot-code { display: inline-block; font-size: 26rpx; font-weight: bold; color: var(--ink); white-space: nowrap; }
+.spot-price { display: block; font-size: 20rpx; color: var(--danger); margin-top: 4rpx; white-space: nowrap; }
+
+/* ============ 空状态 ============ */
+.empty {
+  text-align: center;
+  color: var(--ink-3);
+  padding: 40rpx 0;
+  font-size: 26rpx;
+}
+.empty-with-icon { padding: 80rpx 0; }
+.empty-icon { font-size: 72rpx; opacity: 0.6; margin-bottom: 16rpx; }
+.empty-text { font-size: 26rpx; color: var(--ink-3); }

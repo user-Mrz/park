@@ -1,44 +1,67 @@
 <view class="container">
-  <view class="user-card" bindtap="goProfile">
-    <image wx:if="{{userInfo.avatar}}" class="avatar-img" src="{{fileBase}}{{userInfo.avatar}}" mode="aspectFill" />
-    <view wx:else class="avatar">👤</view>
-    <view class="user-info" wx:if="{{isLoggedIn}}">
-      <text class="nickname">{{userInfo.nickname || '用户'}}</text>
-      <text class="phone">{{userInfo.phone || '未绑定手机号'}}</text>
-      <text class="phone" wx:if="{{userInfo.plateNumber}}">车牌 {{userInfo.plateNumber}}</text>
-      <text class="phone" wx:if="{{identityText}}">{{identityText}}</text>
+  <!-- 品牌页头（§5.1）：渐变 + 装饰圆 + 用户信息 -->
+  <view class="header brand-gradient">
+    <view class="header-deco header-deco-1"></view>
+    <view class="header-deco header-deco-2"></view>
+    <view class="header-user" bindtap="goProfile">
+      <image wx:if="{{userInfo.avatar}}" class="avatar-img" src="{{fileBase}}{{userInfo.avatar}}" mode="aspectFill" />
+      <view wx:else class="avatar">👤</view>
+      <view class="user-info" wx:if="{{isLoggedIn}}">
+        <text class="nickname">{{userInfo.nickname || '用户'}}</text>
+        <text class="phone">{{userInfo.phone || '未绑定手机号'}}</text>
+        <text class="phone" wx:if="{{userInfo.plateNumber}}">车牌 {{userInfo.plateNumber}}</text>
+        <text class="phone" wx:if="{{identityText}}">{{identityText}}</text>
+      </view>
+      <view class="user-info" wx:else>
+        <text class="nickname">未登录</text>
+        <text class="phone">点击登录使用更多功能</text>
+      </view>
+      <text class="card-arrow" wx:if="{{isLoggedIn}}">›</text>
     </view>
-    <view class="user-info" wx:else>
-      <text class="nickname">未登录</text>
-      <text class="phone">点击登录使用更多功能</text>
-    </view>
-    <text class="card-arrow" wx:if="{{isLoggedIn}}">›</text>
   </view>
 
-  <view class="balance-bar" wx:if="{{isLoggedIn}}">
-    <text>账户余额</text>
-    <text class="balance-num">¥{{userInfo.balance || '0.00'}}</text>
-    <text class="recharge-link" bindtap="goPage" data-url="/pages/recharge/recharge">充值</text>
+  <!-- 余额浮层卡：并入页头重叠区，充值入口收编为主按钮 -->
+  <view class="balance-card card" wx:if="{{isLoggedIn}}">
+    <view class="balance-left">
+      <text class="balance-label">账户余额（元）</text>
+      <text class="balance-num hero-num">{{userInfo.balance || '0.00'}}</text>
+    </view>
+    <view class="recharge-btn btn-primary" bindtap="goPage" data-url="/pages/recharge/recharge">充值</view>
+  </view>
+
+  <!-- 用户角色与可见停车区域（RBAC）：接口失败时 permRoleText 为空，整块不渲染 -->
+  <view class="perm-card" wx:if="{{isLoggedIn && permRoleText}}">
+    <view class="perm-card-title">身份与权限</view>
+    <view class="perm-row">
+      <text class="perm-label">用户角色</text>
+      <text class="perm-value">{{permRoleText}}</text>
+    </view>
+    <view class="perm-row">
+      <text class="perm-label">可见停车区域</text>
+      <text class="perm-value">{{permZoneText || '全部区域'}}</text>
+    </view>
   </view>
 
   <view class="menu-list">
-    <view class="menu-item" bindtap="goPage" data-url="/pages/reserve/reserve"><text>📅 预约车位</text><text class="arrow">›</text></view>
-    <view class="menu-item" bindtap="goPage" data-url="/pages/visit/visit"><text>🚸 访客/家长报备</text><text class="arrow">›</text></view>
-    <view class="menu-item" bindtap="goPage" data-url="/pages/enter/enter"><text>🚗 车辆入场</text><text class="arrow">›</text></view>
-    <view class="menu-item" bindtap="goPage" data-url="/pages/exit/exit"><text>🏁 车辆离场</text><text class="arrow">›</text></view>
-    <view class="menu-item" bindtap="goPage" data-url="/pages/my-reservations/my-reservations"><text>🗓️ 我的预约</text><text class="arrow">›</text></view>
-    <view class="menu-item" bindtap="goPage" data-url="/pages/record/record"><text>📋 停车记录</text><text class="arrow">›</text></view>
-    <view class="menu-item" bindtap="goPage" data-url="/pages/my-violations/my-violations"><text>⚠️ 我的违规</text><text class="arrow">›</text></view>
-    <view class="menu-item" bindtap="goPage" data-url="/pages/record/record?tab=1"><text>💰 充值记录</text><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/my-pass/my-pass"><view class="menu-left"><view class="icon-badge icon-badge-sm icon-badge-orange">🎫</view><text>月卡 / 长租</text></view><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/reserve/reserve"><view class="menu-left"><view class="icon-badge icon-badge-sm icon-badge-blue">📅</view><text>预约车位</text></view><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/visit/visit"><view class="menu-left"><view class="icon-badge icon-badge-sm icon-badge-tidal">🚸</view><text>访客/家长报备</text></view><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/enter/enter"><view class="menu-left"><view class="icon-badge icon-badge-sm icon-badge-green">🚗</view><text>车辆入场</text></view><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/exit/exit"><view class="menu-left"><view class="icon-badge icon-badge-sm icon-badge-orange">🏁</view><text>车辆离场</text></view><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/my-reservations/my-reservations"><view class="menu-left"><view class="icon-badge icon-badge-sm icon-badge-purple">🗓️</view><text>我的预约</text></view><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/record/record"><view class="menu-left"><view class="icon-badge icon-badge-sm icon-badge-blue">📋</view><text>停车记录</text></view><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/my-violations/my-violations"><view class="menu-left"><view class="icon-badge icon-badge-sm icon-badge-red">⚠️</view><text>我的违规</text></view><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/rules/rules"><view class="menu-left"><view class="icon-badge icon-badge-sm icon-badge-orange">📜</view><text>停车规则</text></view><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/record/record?tab=1"><view class="menu-left"><view class="icon-badge icon-badge-sm icon-badge-green">💰</view><text>充值记录</text></view><text class="arrow">›</text></view>
   </view>
 
   <view class="menu-list" style="margin-top: 20rpx;" wx:if="{{isLoggedIn}}">
-    <view class="menu-item" bindtap="goPage" data-url="/pages/profile/profile"><text>👤 账号信息</text><text class="arrow">›</text></view>
-    <view class="menu-item" bindtap="goPage" data-url="/pages/password/password"><text>🔒 修改密码</text><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/profile/profile"><view class="menu-left"><view class="icon-badge icon-badge-sm icon-badge-purple">👤</view><text>账号信息</text></view><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/password/password"><view class="menu-left"><view class="icon-badge icon-badge-sm icon-badge-blue">🔒</view><text>修改密码</text></view><text class="arrow">›</text></view>
   </view>
 
   <view class="menu-list" style="margin-top: 20rpx;">
-    <view class="menu-item" bindtap="handleLogout" wx:if="{{isLoggedIn}}"><text style="color:#F56C6C">🚪 退出登录</text><text class="arrow">›</text></view>
-    <view class="menu-item" bindtap="goPage" data-url="/pages/login/login" wx:else><text style="color:#007AFF">🔑 登录/注册</text><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="handleLogout" wx:if="{{isLoggedIn}}"><view class="menu-left"><view class="icon-badge icon-badge-sm icon-badge-red">🚪</view><text class="logout-text">退出登录</text></view><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="goPage" data-url="/pages/login/login" wx:else><view class="menu-left"><view class="icon-badge icon-badge-sm icon-badge-blue">🔑</view><text class="login-text">登录/注册</text></view><text class="arrow">›</text></view>
   </view>
 </view>

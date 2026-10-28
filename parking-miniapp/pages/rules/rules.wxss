@@ -1,0 +1,49 @@
+.container { padding: 20rpx; }
+
+/* ============ 条款白卡分组 ============ */
+.card {
+  background: var(--card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 24rpx 28rpx;
+  margin-bottom: 20rpx;
+}
+.card-title { font-size: 30rpx; font-weight: bold; color: var(--ink); margin-bottom: 16rpx; }
+.card-title.warn { color: var(--danger); }
+.tip { font-size: 24rpx; color: var(--ink-3); line-height: 1.7; padding: 8rpx 0; }
+.grace { color: var(--warn); font-weight: bold; }
+
+.rule-grid { display: flex; flex-wrap: wrap; margin-top: 8rpx; }
+.rule-item {
+  width: 50%;
+  box-sizing: border-box;
+  padding: 14rpx 16rpx;
+  background: #F7F9FC;
+  border: 1rpx solid var(--hairline);
+  border-radius: 12rpx;
+  margin-bottom: 12rpx;
+}
+.rule-item:nth-child(odd) { margin-right: 12rpx; width: calc(50% - 12rpx); }
+/* 条款标签：等宽字距 + 品牌深色 */
+.rule-label {
+  font-size: 24rpx;
+  color: var(--brand-deep);
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 8rpx;
+}
+.rule-hint { color: var(--ink-3); font-size: 22rpx; letter-spacing: normal; }
+.rule-value { font-size: 30rpx; font-weight: bold; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+.vio-item {
+  border-left: 6rpx solid var(--danger);
+  background: rgba(245, 108, 108, 0.08);
+  border-radius: 12rpx;
+  padding: 18rpx 20rpx;
+  margin-top: 16rpx;
+}
+.vio-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8rpx; }
+.vio-name { font-size: 28rpx; font-weight: bold; color: var(--ink); }
+.vio-points { font-size: 22rpx; color: #fff; background: var(--danger); padding: 4rpx 16rpx; border-radius: var(--radius-pill); }
+.vio-desc { font-size: 24rpx; color: var(--ink-2); line-height: 1.6; }

@@ -1,4 +1,5 @@
 import request from '../../utils/request.js'
+import { createPoller } from '../../utils/poller.js'
 
 Page({
   data: {
@@ -17,12 +18,35 @@ Page({
 
   onShow() {
     this.loadData()
+    this.startSync()
   },
 
-  loadData() {
-    if (this.data.tab === 0) this.loadVehicleRecords()
-    else if (this.data.tab === 1) this.loadRechargeRecords()
-    else this.loadPaymentRecords()
+  onHide() {
+    this.stopSync()
+  },
+
+  onUnload() {
+    this.stopSync()
+  },
+
+  /** 每 10 秒同步一次：管理员结算后新的停车/扣费记录自动出现 */
+  startSync() {
+    this.stopSync()
+    this.recordPoller = createPoller(() => this.loadData(true), 10000)
+    this.recordPoller.start()
+  },
+
+  stopSync() {
+    if (this.recordPoller) {
+      this.recordPoller.stop()
+      this.recordPoller = null
+    }
+  },
+
+  loadData(silent) {
+    if (this.data.tab === 0) return this.loadVehicleRecords(silent)
+    if (this.data.tab === 1) return this.loadRechargeRecords(silent)
+    return this.loadPaymentRecords(silent)
   },
 
   switchTab(e) {
@@ -30,23 +54,23 @@ Page({
     this.loadData()
   },
 
-  loadVehicleRecords() {
-    if (!wx.getStorageSync('token')) return
-    request.get('/user/vehicle-records?page=1&pageSize=50').then((res) => {
+  loadVehicleRecords(silent) {
+    if (!wx.getStorageSync('token')) return Promise.resolve()
+    return request.get('/user/vehicle-records?page=1&pageSize=50', {}, silent).then((res) => {
       this.setData({ vehicleRecords: (res.data && res.data.records) || [] })
     }).catch(() => {})
   },
 
-  loadRechargeRecords() {
-    if (!wx.getStorageSync('token')) return
-    request.get('/user/recharge/records?page=1&pageSize=50').then((res) => {
+  loadRechargeRecords(silent) {
+    if (!wx.getStorageSync('token')) return Promise.resolve()
+    return request.get('/user/recharge/records?page=1&pageSize=50', {}, silent).then((res) => {
       this.setData({ rechargeRecords: (res.data && res.data.records) || [] })
     }).catch(() => {})
   },
 
-  loadPaymentRecords() {
-    if (!wx.getStorageSync('token')) return
-    request.get('/user/payment/records?page=1&pageSize=50').then((res) => {
+  loadPaymentRecords(silent) {
+    if (!wx.getStorageSync('token')) return Promise.resolve()
+    return request.get('/user/payment/records?page=1&pageSize=50', {}, silent).then((res) => {
       this.setData({ paymentRecords: (res.data && res.data.records) || [] })
     }).catch(() => {})
   }

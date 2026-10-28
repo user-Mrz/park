@@ -1,3 +1,6 @@
-# 用户上传的头像等文件不纳入版本控制
+# 用户上传的头像、公告附件等文件不纳入版本控制（仅保留目录占位）
 *
 !.gitignore
+!announcement/
+announcement/*
+!announcement/.gitkeep

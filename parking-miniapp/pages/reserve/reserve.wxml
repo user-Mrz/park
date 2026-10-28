@@ -19,10 +19,25 @@
       <text wx:if="{{!verified}}">　（未认证，暂不能预约）</text>
     </view>
 
-    <view class="form-title">选择车位（按身份显示可停区域）</view>
-    <picker mode="selector" range="{{spots}}" range-key="label" bindchange="onSpotChange">
-      <view class="picker-view">{{selectedSpot ? selectedSpot.spotCode + ' · ' + selectedSpot.zoneName + ' · ¥' + selectedSpot.pricePerHour + '/h' : '请选择车位'}}</view>
+    <view class="form-title">搜索车位</view>
+    <view class="search-box">
+      <input class="search-input" placeholder="输入车位编号 / 区域 / 分区名" value="{{spotKeyword}}" bindinput="onKeywordInput" confirm-type="search" bindconfirm="onSpotSearch"/>
+      <view class="search-btn" bindtap="onSpotSearch">搜索</view>
+    </view>
+    <view class="search-hint" wx:if="{{spotKeyword}}">已匹配 {{searchMatched}} 个车位{{searchMatched === 0 ? '，请尝试其他关键字' : '，可在下方区域中选择'}}</view>
+
+    <view class="form-title">选择停车区域</view>
+    <picker mode="selector" range="{{zones}}" range-key="label" bindchange="onZoneChange">
+      <view class="picker-view">{{selectedZone ? selectedZone.label : '请选择停车区域（如：图书馆区）'}}</view>
     </picker>
+
+    <view class="form-title">选择车位</view>
+    <picker mode="selector" range="{{zoneSpots}}" range-key="label" bindchange="onSpotChange" disabled="{{!selectedZone}}">
+      <view class="picker-view mono-no {{selectedZone ? '' : 'disabled'}}">{{selectedSpot ? selectedSpot.label : (selectedZone ? '请选择车位' : '请先选择停车区域')}}</view>
+    </picker>
+    <view class="time-hint" wx:if="{{selectedZone}}">{{selectedZone.name}} 共 {{selectedZone.count}} 个空闲车位 · {{selectedZone.priceText}}</view>
+    <!-- 潮汐车位：提示该批次的开放时间段，预约时段必须落在其中 -->
+    <view class="tidal-bar" wx:if="{{tidalHint}}">{{tidalHint}}</view>
 
     <view class="form-title">开始日期</view>
     <picker mode="selector" range="{{dateList}}" bindchange="onDateChange">
@@ -46,6 +61,6 @@
       <text>预计费用：</text><text class="fee-amount">¥{{totalFee}}</text>
     </view>
 
-    <button class="submit-btn" bindtap="handleReserve" loading="{{submitting}}" disabled="{{!selectedSpot || !startTime}}">确认预约</button>
+    <button class="submit-btn btn-primary" bindtap="handleReserve" loading="{{submitting}}" disabled="{{!selectedSpot || !startTime}}">确认预约</button>
   </view>
 </view>

@@ -77,10 +77,14 @@ Page({
     request.get('/user/benefits', {}, true).then((res) => {
       const b = res.data || {}
       this.setData({
-        canReport: !!b.verified,
+        // 报备对身份验证状态放宽：只要登录就可以提交，审核由管理员进行
+        canReport: true,
         parentFreeMinutes: Number(b.freeMinutes) || 30
       })
-    }).catch(() => {})
+    }).catch(() => {
+      // 接口失败时也允许报备（不阻塞）
+      this.setData({ canReport: true, parentFreeMinutes: 30 })
+    })
   },
 
   loadReports() {

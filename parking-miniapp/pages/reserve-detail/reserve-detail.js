@@ -1,4 +1,6 @@
 import request from '../../utils/request.js'
+import { createPoller } from '../../utils/poller.js'
+import { requestAndReport, SubscribeScenes } from '../../utils/subscribe.js'
 
 Page({
   data: {
@@ -24,19 +26,63 @@ Page({
 
   onLoad(options) {
     const id = options.id
+    this.reservationId = id
     if (id) this.loadDetail(id)
     else this.setData({ loading: false })
   },
 
-  async loadDetail(id) {
+  onShow() {
+    // 管理员取消/车位变动后，本页自动同步（10 秒一次）
+    this.startSync()
+  },
+
+  onHide() {
+    this.stopSync()
+  },
+
+  onUnload() {
+    this.stopSync()
+  },
+
+  startSync() {
+    this.stopSync()
+    if (!this.reservationId) return
+    this.detailPoller = createPoller(() => this.loadDetail(this.reservationId, true), 10000)
+    this.detailPoller.start()
+  },
+
+  stopSync() {
+    if (this.detailPoller) {
+      this.detailPoller.stop()
+      this.detailPoller = null
+    }
+  },
+
+  async loadDetail(id, silent) {
     if (!wx.getStorageSync('token')) { this.setData({ loading: false }); return }
-    this.setData({ loading: true })
-    request.get('/reservation/' + id).then((res) => {
+    if (!silent) this.setData({ loading: true })
+    request.get('/reservation/' + id, {}, silent).then((res) => {
       const r = res.data
       this.setData(Object.assign({ reservation: r, loading: false }, this.computeStatus(r.status)))
+      // 预约前 15 分钟提醒：状态活跃 + 开始时间在 0~30 分钟内
+      if (r && Number(r.status) === 1 && r.startTime) {
+        this.tryReserveRemindSubscribe(r)
+      }
     }).catch(() => {
-      this.setData({ loading: false })
+      if (!silent) this.setData({ loading: false })
     })
+  },
+
+  /** 判断预约是否在 0~30 分钟内开始，触发订阅提醒（尽力而为） */
+  tryReserveRemindSubscribe(r) {
+    try {
+      const startMs = new Date(r.startTime.replace(/-/g, '/')).getTime()
+      const now = Date.now()
+      const diffMin = (startMs - now) / 60000
+      if (diffMin > 0 && diffMin <= 30) {
+        requestAndReport(SubscribeScenes.SCENE_RESERVE_REMIND, r.reservationNo || String(r.id))
+      }
+    } catch (e) { /* 时间解析失败忽略 */ }
   },
 
   goBack() {

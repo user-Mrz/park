@@ -1,14 +1,14 @@
 .container { padding: 30rpx; }
-.exit-card { background: #fff; border-radius: 16rpx; padding: 50rpx 30rpx; text-align: center; }
+.exit-card { background: var(--card); border-radius: var(--radius-card); padding: 50rpx 30rpx; text-align: center; }
 .icon-area { font-size: 100rpx; margin-bottom: 10rpx; }
-.title { font-size: 36rpx; font-weight: bold; color: #333; margin-bottom: 30rpx; }
+.title { font-size: 36rpx; font-weight: bold; color: var(--ink); margin-bottom: 30rpx; }
 .info-box { text-align: left; margin-bottom: 30rpx; }
-.info-row { display: flex; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid #f0f0f0; font-size: 28rpx; }
-.info-label { color: #999; }
-.highlight { color: #E6A23C; font-weight: bold; }
+.info-row { display: flex; justify-content: space-between; padding: 16rpx 0; border-bottom: 1rpx solid var(--hairline); font-size: 28rpx; }
+.info-label { color: var(--ink-3); }
+.highlight { color: var(--warn); font-weight: bold; }
 .fee-row { margin-top: 10rpx; }
-.fee { font-size: 36rpx; font-weight: bold; color: #F56C6C; }
-.settle-note { background: #f0f9ff; color: #409EFF; padding: 16rpx; border-radius: 8rpx; font-size: 26rpx; margin-bottom: 20rpx; }
-.warning { background: #fef0f0; color: #F56C6C; padding: 16rpx; border-radius: 8rpx; font-size: 26rpx; margin-bottom: 20rpx; }
-.exit-btn { width: 100%; background: #F56C6C; color: #fff; border-radius: 12rpx; font-size: 32rpx; }
+.fee { font-size: 56rpx; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--danger); }
+.settle-note { background: var(--brand-tint); color: var(--brand-deep); padding: 16rpx; border-radius: var(--radius-card); font-size: 26rpx; margin-bottom: 20rpx; }
+.warning { background: rgba(245, 108, 108, 0.1); color: var(--danger); padding: 16rpx; border-radius: var(--radius-card); font-size: 26rpx; margin-bottom: 20rpx; }
+.exit-btn { width: 100%; background: var(--danger); color: #fff; border-radius: var(--radius-pill); font-size: 32rpx; }
 .exit-btn[disabled] { opacity: 0.5; }

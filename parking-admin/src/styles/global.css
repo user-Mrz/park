@@ -6,19 +6,474 @@
 
 html,
 body,
-#root {
+#app {
   height: 100%;
   font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
 }
 
-/* 管理页面通用样式 */
+body {
+  background: #ffffff;
+  color: #303133;
+}
+
+/* ============ Element Plus 浅色主题变量定制 ============ */
+:root {
+  --el-color-primary: #409eff;
+  --el-color-primary-light-3: #79bbff;
+  --el-color-primary-light-5: #a0cfff;
+  --el-color-primary-light-7: #c6e2ff;
+  --el-color-primary-light-8: #d9ecff;
+  --el-color-primary-light-9: #ecf5ff;
+  --el-color-primary-dark-2: #337ecc;
+  --el-color-success: #67c23a;
+  --el-color-warning: #e6a23c;
+  --el-color-danger: #f56c6c;
+  --el-color-error: #f56c6c;
+  --el-color-info: #909399;
+  --el-bg-color: #ffffff;
+  --el-bg-color-page: #f5f7fa;
+  --el-bg-color-overlay: #ffffff;
+  --el-text-color-primary: #1d2129;
+  --el-text-color-regular: #303133;
+  --el-text-color-secondary: #606266;
+  --el-text-color-placeholder: #a8abb2;
+  --el-border-color: #dcdfe6;
+  --el-border-color-light: #e4e7ed;
+  --el-border-color-lighter: #ebeef5;
+  --el-border-color-extra-light: #f2f6fc;
+  --el-fill-color: #f0f2f5;
+  --el-fill-color-light: #f5f7fa;
+  --el-fill-color-lighter: #fafafa;
+  --el-fill-color-blank: #ffffff;
+  --el-mask-color: rgba(255, 255, 255, 0.9);
+  --el-border-radius-base: 6px;
+}
+
+/* 表格：浅色表头与 hover
+   注意：tr/表格背景必须不透明——fixed 固定列（如操作列）浮动在滚动内容之上，
+   若背景透明，横向滚动时下层单元格内容会透过操作列显示，造成按钮"堆叠" */
+.el-table {
+  --el-table-header-bg-color: #f5f9ff;
+  --el-table-tr-bg-color: #ffffff;
+  --el-table-row-hover-bg-color: #ecf5ff;
+  --el-table-border-color: #ebeef5;
+  --el-table-bg-color: #ffffff;
+  --el-table-text-color: #303133;
+  --el-table-header-text-color: #1d2129;
+}
+.el-table th.el-table__cell {
+  font-weight: 700;
+}
+
+/* 卡片 / 抽屉 / 弹窗：白色面板 */
+.el-card {
+  --el-card-bg-color: #ffffff;
+  --el-card-border-color: #ebeef5;
+}
+.el-drawer,
+.el-dialog {
+  --el-drawer-bg-color: #ffffff;
+  --el-dialog-bg-color: #ffffff;
+}
+.el-menu {
+  border-right: none;
+}
+
+
+/* ============ 全局浅色滚动条 ============ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f5f7fa;
+}
+::-webkit-scrollbar-thumb {
+  background: #c0d4e8;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #90b3d8;
+}
+
+/* ============ 科技风面板（保留四角装饰，浅色化） ============ */
+.tech-panel {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #e4e7ed;
+  border-radius: 6px;
+  box-shadow: 0 2px 12px rgba(0, 40, 100, 0.06);
+}
+.tech-panel::before,
+.tech-panel::after,
+.tech-panel .corner::before,
+.tech-panel .corner::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: #409eff;
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+}
+.tech-panel::before {
+  top: -1px;
+  left: -1px;
+  border-top-width: 2px;
+  border-left-width: 2px;
+}
+.tech-panel::after {
+  top: -1px;
+  right: -1px;
+  border-top-width: 2px;
+  border-right-width: 2px;
+}
+.tech-panel .corner::before {
+  bottom: -1px;
+  left: -1px;
+  border-bottom-width: 2px;
+  border-left-width: 2px;
+}
+.tech-panel .corner::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+}
+
+/* 面板标题 */
+.tech-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1d2129;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #ebeef5;
+  background: linear-gradient(90deg, #ecf5ff, transparent 60%);
+}
+.tech-title::before {
+  content: '';
+  width: 4px;
+  height: 14px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #409eff, #337ecc);
+}
+.tech-title .tech-sub {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 400;
+  color: #909399;
+  letter-spacing: 0;
+}
+
+/* ============ 大屏驾驶舱（首页） ============ */
+.bs-wrapper {
+  margin: -20px;
+  min-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(1200px 500px at 50% -10%, rgba(64, 158, 255, 0.08), transparent 60%),
+    radial-gradient(900px 420px at 0% 100%, rgba(64, 158, 255, 0.05), transparent 60%),
+    radial-gradient(900px 420px at 100% 100%, rgba(64, 158, 255, 0.05), transparent 60%),
+    #ffffff;
+}
+
+/* 顶部标题栏 */
+.bs-header {
+  position: relative;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: linear-gradient(180deg, #ecf5ff, rgba(255, 255, 255, 0));
+  border-bottom: 1px solid #d9ecff;
+}
+.bs-header-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  white-space: nowrap;
+}
+.bs-header-title h1 {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 6px;
+  background: linear-gradient(180deg, #1d2129, #409eff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+.bs-wing {
+  width: 150px;
+  height: 8px;
+  opacity: 0.7;
+}
+.bs-wing.left {
+  background: linear-gradient(90deg, transparent, #409eff);
+  clip-path: polygon(0 40%, 70% 40%, 100% 0, 70% 60%, 0 60%);
+}
+.bs-wing.right {
+  transform: scaleX(-1);
+  background: linear-gradient(90deg, transparent, #409eff);
+  clip-path: polygon(0 40%, 70% 40%, 100% 0, 70% 60%, 0 60%);
+}
+.bs-header-side {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: #606266;
+  font-size: 13px;
+  min-width: 220px;
+}
+.bs-header-side.right {
+  justify-content: flex-end;
+}
+.bs-clock {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1d2129;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 三栏主体 */
+.bs-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 24% 1fr 24%;
+  gap: 12px;
+  padding: 12px 16px 16px;
+  min-height: 0;
+}
+.bs-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* 停车区域统计小卡 */
+.zone-grid {
+  display: grid;
+  /* minmax(0, 1fr) 让列宽严格按 1fr 分配，避免内容撑开列宽导致右侧被 overflow 裁切 */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px;
+  overflow: hidden;
+}
+.zone-card {
+  border: 1px solid #ebeef5;
+  border-radius: 6px;
+  padding: 8px 10px;
+  /* min-width:0 让卡片作为 grid 子项可以收缩；overflow:hidden 让溢出在卡片内部处理 */
+  min-width: 0;
+  overflow: hidden;
+  background: #f5f9ff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.zone-card:hover {
+  border-color: #409eff;
+  box-shadow: 0 2px 10px rgba(64, 158, 255, 0.15);
+}
+.zone-card-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1d2129;
+  margin-bottom: 4px;
+  /* 让 flex 子项可以收缩并触发省略号 */
+  min-width: 0;
+}
+.zone-card-head .z-badge {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffffff;
+  background: linear-gradient(135deg, #409eff, #337ecc);
+  flex-shrink: 0;
+}
+.zone-card-name {
+  /* 关键：flex:1 + min-width:0 让文本在 flex 容器内正确收缩 + 显示省略号 */
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.zone-card-nums {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #909399;
+  /* 让 flex 容器可以收缩，子项不会被挤破 */
+  min-width: 0;
+}
+.zone-card-nums .occupied,
+.zone-card-nums .vacant {
+  /* 防止"已停"/"空闲"文字和数字被压缩或换行 */
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.zone-card-nums b {
+  font-size: 16px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  margin-left: 4px;
+}
+.zone-card-nums .occupied b {
+  color: #e6a23c;
+}
+.zone-card-nums .vacant b {
+  color: #67c23a;
+}
+
+/* 中央地图区 */
+.bs-map {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+.bs-map-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  min-height: 0;
+}
+
+/* 底部指标条 */
+.bs-stats {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  padding: 12px;
+}
+.bs-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 4px 8px;
+  border: 1px solid #ebeef5;
+  border-radius: 6px;
+  background: #f5f9ff;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  cursor: default;
+}
+.bs-stat:hover {
+  border-color: #409eff;
+  box-shadow: 0 2px 12px rgba(64, 158, 255, 0.15);
+  transform: translateY(-2px);
+}
+.bs-stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  border: 1px solid #d9ecff;
+  background: radial-gradient(circle at 30% 30%, #ecf5ff, #d9ecff);
+  color: #409eff;
+}
+.bs-stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #1d2129;
+  line-height: 1.1;
+}
+.bs-stat-label {
+  font-size: 12px;
+  color: #909399;
+  white-space: nowrap;
+}
+
+/* 大屏列内面板纵向排布，列表区可滚动 */
+.bs-col .tech-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.bs-col .panel-flex {
+  flex: 1;
+  min-height: 0;
+}
+.bs-col .panel-fixed {
+  flex: none;
+}
+
+/* 违停 / 告警列表 */
+.alarm-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px 12px;
+  min-height: 0;
+}
+.alarm-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  margin-bottom: 8px;
+  border: 1px solid #ebeef5;
+  border-left: 3px solid #e6a23c;
+  border-radius: 4px;
+  background: #fdf6ec;
+  font-size: 12px;
+  color: #606266;
+}
+.alarm-item .al-plate {
+  font-weight: 700;
+  color: #1d2129;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.alarm-item .al-time {
+  margin-left: auto;
+  color: #909399;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.alarm-item.critical {
+  border-left-color: #f56c6c;
+  background: #fef0f0;
+}
+
+/* ============ 侧边栏（浅色科技风） ============ */
+.tech-sider {
+  background: #ffffff !important;
+  border-right: 1px solid #ebeef5;
+  box-shadow: 2px 0 12px rgba(0, 40, 100, 0.04);
+}
+
+/* ============ 管理页面通用样式 ============ */
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.page-container .ant-card-head {
+.page-container .el-card__header {
   font-weight: bold;
 }
 
@@ -29,22 +484,20 @@ body,
   margin-top: 16px;
 }
 
-/* ============ 首页 Dashboard ============ */
-
-/* 统计卡片 */
+/* ============ 首页统计卡片（兼容旧结构） ============ */
 .stat-card {
   height: 100%;
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
 }
-.stat-card .ant-card-body {
+.stat-card .el-card__body {
   padding: 20px;
 }
 .stat-card-hover {
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
 }
 .stat-card-hover:hover {
-  box-shadow: 0 6px 18px rgba(0, 21, 41, 0.1);
+  box-shadow: 0 6px 18px rgba(64, 158, 255, 0.15);
   transform: translateY(-2px);
 }
 .dash-icon-badge {
@@ -60,12 +513,12 @@ body,
 /* 中排等高卡片 */
 .mid-card {
   height: 100%;
-  border-radius: 10px;
+  border-radius: 8px;
 }
-.mid-card .ant-card-head {
+.mid-card .el-card__header {
   border-bottom: none;
 }
-.mid-card .ant-card-body {
+.mid-card .el-card__body {
   padding-top: 8px;
 }
 
@@ -76,8 +529,9 @@ body,
   gap: 14px;
 }
 .metric-item {
-  background: #f7f8fa;
-  border-radius: 10px;
+  background: #f5f9ff;
+  border: 1px solid #ebeef5;
+  border-radius: 8px;
   padding: 14px 16px;
 }
 .metric-label {
@@ -86,7 +540,7 @@ body,
   margin-bottom: 6px;
 }
 .metric-value {
-  color: #303133;
+  color: #1d2129;
   font-size: 22px;
   font-weight: 700;
   line-height: 1.2;
@@ -95,7 +549,7 @@ body,
   color: #409eff;
 }
 .metric-extra {
-  color: #c0c4cc;
+  color: #909399;
   font-size: 12px;
 }
 
@@ -112,7 +566,7 @@ body,
 }
 .usage-head .usage-name {
   font-weight: 600;
-  color: #303133;
+  color: #1d2129;
 }
 .usage-head .usage-pct {
   color: #606266;
@@ -122,16 +576,16 @@ body,
   height: 10px;
   border-radius: 6px;
   overflow: hidden;
-  background: #f0f2f5;
+  background: #ebeef5;
 }
 .usage-seg.busy {
-  background: #e6a23c;
+  background: linear-gradient(90deg, #e6a23c, #f0c78a);
 }
 .usage-seg.free {
-  background: #67c23a;
+  background: linear-gradient(90deg, #67c23a, #95d475);
 }
 .usage-seg.maintain {
-  background: #f56c6c;
+  background: linear-gradient(90deg, #f56c6c, #f89898);
 }
 .usage-note {
   display: flex;
@@ -157,9 +611,9 @@ body,
   align-items: start;
 }
 .area-group {
-  background: #fafbfc;
-  border: 1px solid #f0f2f5;
-  border-radius: 10px;
+  background: #f5f9ff;
+  border: 1px solid #ebeef5;
+  border-radius: 8px;
   padding: 14px;
 }
 .area-group-header {
@@ -171,7 +625,7 @@ body,
 .area-group-title {
   font-size: 15px;
   font-weight: 700;
-  color: #303133;
+  color: #1d2129;
   padding-left: 10px;
   border-left: 4px solid #409eff;
   line-height: 1.2;
@@ -187,8 +641,8 @@ body,
   gap: 4px;
   font-size: 12px;
   color: #606266;
-  background: #fff;
-  border: 1px solid #ebeef5;
+  background: #ecf5ff;
+  border: 1px solid #d9ecff;
   border-radius: 12px;
   padding: 1px 8px;
 }
@@ -198,17 +652,38 @@ body,
   border-radius: 2px;
 }
 .spot-item {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 40, 100, 0.08);
 }
 .spot-item:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 14px rgba(64, 158, 255, 0.2);
   transform: translateY(-1px);
-  border-color: rgba(64, 158, 255, 0.45) !important;
+  border-color: #409eff !important;
 }
 
-/* 响应式：窄屏下地图块回到单列 */
+/* 响应式：窄屏下大屏三栏与地图块降级
+   注意：三栏大屏在 1024px 以上保持（1366 笔记本/未最大化窗口是主场景）；
+   单列降级时必须给图表面板设最小高度，否则 flex:1 的面板无高度约束，
+   ECharts 容器会塌陷成 ~1px，坐标轴标签全部叠在一起 */
 @media (max-width: 992px) {
+  .bs-body {
+    grid-template-columns: 1fr;
+  }
+  .bs-col.side {
+    order: 2;
+  }
+  .bs-col .panel-flex {
+    min-height: 280px;
+  }
+  .bs-map {
+    min-height: 480px;
+  }
+  .bs-map-scroll {
+    max-height: 60vh;
+  }
   .map-areas {
     grid-template-columns: 1fr;
+  }
+  .bs-stats {
+    grid-template-columns: repeat(3, 1fr);
   }
 }

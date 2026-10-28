@@ -1,4 +1,163 @@
 page {
-  background-color: #f5f5f5;
+  background-color: #F5F6FA;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* 禁止 WebView 自动放大字号（部分华为/安卓机型会触发字体缩放，导致固定高度元素被撑破） */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+
+  /* ============ 设计令牌（docs/miniapp-ui-design.md §3） ============ */
+  /* 品牌色 */
+  --brand-start: #5B8DEF;
+  --brand-mid: #6B7FE3;
+  --brand-end: #7E6FD0;
+  --brand-deep: #4A7FE0;
+  --brand-tint: #F0F7FF;
+  /* 状态语义色 */
+  --ok: #34B37E;
+  --warn: #E6A23C;
+  --danger: #F56C6C;
+  --info: #909399;
+  /* 区域识别色 */
+  --zone-teach: #5B8DEF;
+  --zone-library: #7E6FD0;
+  --zone-dorm: #2EB5AD;
+  --zone-gym: #E6A23C;
+  --zone-visitor: #64748B;
+  --zone-tidal: #45B8D6;
+  /* 中性色 */
+  --bg: #F5F6FA;
+  --card: #FFFFFF;
+  --ink: #1F2937;
+  --ink-2: #6B7280;
+  --ink-3: #9CA3AF;
+  --hairline: #EEF0F4;
+  /* 形状与阴影 */
+  --radius-card: 20rpx;
+  --radius-pill: 999rpx;
+  --radius-badge: 8rpx;
+  --shadow-card: 0 4rpx 16rpx rgba(31, 41, 55, 0.05);
+  --shadow-float: 0 6rpx 20rpx rgba(91, 141, 239, 0.25);
 }
+
+/* ============ 全局组件类（§5） ============ */
+
+/* 品牌渐变（页头/主按钮/入口卡唯一渐变来源） */
+.brand-gradient {
+  background: linear-gradient(135deg, var(--brand-start) 0%, var(--brand-mid) 55%, var(--brand-end) 100%);
+}
+
+/* 主按钮：品牌渐变 + 胶囊（.primary-btn 为旧类名收编，页面只需保留 width/margin 布局声明） */
+.btn-primary,
+.primary-btn {
+  background: linear-gradient(135deg, var(--brand-start) 0%, var(--brand-deep) 100%);
+  color: #fff;
+  border-radius: var(--radius-pill);
+  font-size: 32rpx;
+  font-weight: 600;
+  box-shadow: 0 4rpx 12rpx rgba(91, 141, 239, 0.3);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.btn-primary:active,
+.primary-btn:active { transform: scale(0.97); opacity: 0.9; }
+.btn-primary::after,
+.primary-btn::after { border: none; }
+
+/* 次按钮：白底 + 品牌描边 + 胶囊（.plain-btn 为旧类名收编） */
+.btn-secondary,
+.plain-btn {
+  background: var(--card);
+  color: var(--brand-deep);
+  border: 1rpx solid var(--brand-start);
+  border-radius: var(--radius-pill);
+  font-size: 30rpx;
+  font-weight: 500;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.btn-secondary:active { transform: scale(0.97); opacity: 0.85; }
+.btn-secondary::after,
+.plain-btn::after { border: none; }
+
+/* 基础卡片 */
+.card {
+  background: var(--card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 24rpx 28rpx;
+  box-sizing: border-box;
+}
+
+/* 车牌徽章：蓝底白字（§4.2） */
+.plate-badge {
+  display: inline-block;
+  padding: 8rpx 20rpx;
+  background: linear-gradient(135deg, #2B6CB0 0%, #1E4E8C 100%);
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 600;
+  border-radius: var(--radius-badge);
+  letter-spacing: 2rpx;
+  box-shadow: 0 2rpx 6rpx rgba(43, 108, 176, 0.25);
+}
+
+/* 车位铭牌：白底虚线描边 + 等宽数字（§4.2） */
+.spot-badge {
+  display: inline-block;
+  padding: 4rpx 16rpx;
+  background: var(--card);
+  border: 1rpx dashed #C7D2E8;
+  color: var(--ink);
+  font-size: 24rpx;
+  font-weight: 600;
+  border-radius: var(--radius-badge);
+  letter-spacing: 2rpx;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 单号等宽排版（§4.2） */
+.mono-no {
+  letter-spacing: 2rpx;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 图标徽章：emoji 统一圆形浅底（§5.4） */
+.icon-badge {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  flex-shrink: 0;
+}
+.icon-badge-sm { width: 64rpx; height: 64rpx; font-size: 32rpx; }
+.icon-badge-blue   { background: rgba(91, 141, 239, 0.12); }
+.icon-badge-green  { background: rgba(52, 179, 126, 0.12); }
+.icon-badge-orange { background: rgba(230, 162, 60, 0.12); }
+.icon-badge-purple { background: rgba(126, 111, 208, 0.12); }
+.icon-badge-red    { background: rgba(245, 108, 108, 0.12); }
+.icon-badge-tidal  { background: rgba(69, 184, 214, 0.12); }
+
+/* Hero 数字：等宽 + 大字号（§3.2） */
+.hero-num {
+  font-size: 56rpx;
+  font-weight: 600;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 状态标签（§5.5）：语义色 10% 底 + 语义色文字 */
+.status-tag {
+  display: inline-block;
+  font-size: 22rpx;
+  font-weight: 500;
+  padding: 4rpx 14rpx;
+  border-radius: var(--radius-pill);
+  line-height: 1.4;
+}
+.status-tag-ok      { color: var(--ok);     background: rgba(52, 179, 126, 0.1); }
+.status-tag-warn    { color: var(--warn);   background: rgba(230, 162, 60, 0.1); }
+.status-tag-danger  { color: var(--danger); background: rgba(245, 108, 108, 0.1); }
+.status-tag-info    { color: var(--info);   background: rgba(144, 147, 153, 0.12); }
+.status-tag-tidal   { color: var(--zone-tidal); background: rgba(69, 184, 214, 0.1); }

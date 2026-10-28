@@ -1,4 +1,5 @@
 import request from '../../utils/request.js'
+import { createPoller } from '../../utils/poller.js'
 
 const STATUS_META = {
   0: { text: '待支付', cls: 'pending' },
@@ -19,16 +20,39 @@ Page({
 
   onShow() {
     this.loadList()
+    this.startSync()
   },
 
-  loadList() {
+  onHide() {
+    this.stopSync()
+  },
+
+  onUnload() {
+    this.stopSync()
+  },
+
+  /** 每 10 秒同步一次：管理员取消/过期预约后本页自动更新 */
+  startSync() {
+    this.stopSync()
+    this.listPoller = createPoller(() => this.loadList(true), 10000)
+    this.listPoller.start()
+  },
+
+  stopSync() {
+    if (this.listPoller) {
+      this.listPoller.stop()
+      this.listPoller = null
+    }
+  },
+
+  loadList(silent) {
     const token = wx.getStorageSync('token')
     if (!token) {
       this.setData({ isLoggedIn: false, loading: false })
-      return
+      return Promise.resolve()
     }
-    this.setData({ isLoggedIn: true, loading: true })
-    request.get('/user/reservations?page=1&pageSize=30', {}, true).then((res) => {
+    if (!silent) this.setData({ isLoggedIn: true, loading: true })
+    return request.get('/user/reservations?page=1&pageSize=30', {}, true).then((res) => {
       const rows = ((res.data && res.data.records) || []).map((r) => {
         const meta = STATUS_META[r.status] || { text: '未知', cls: 'done' }
         return {

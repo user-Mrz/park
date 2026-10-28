@@ -49,7 +49,7 @@
 
       <view class="tip" wx:if="{{endText}}">预计离校时间：{{endText}}</view>
       <view class="tip">家长接送在访客区可享 {{parentFreeMinutes}} 分钟免费停车，超时按访客费率计费；审核通过后系统自动分配「访客与家长临时停车区」车位。</view>
-      <view class="tip warn" wx:if="{{!canReport}}">当前身份尚未通过认证，需先在「账号信息」补全学号/工号并通过管理员审核后才能报备。</view>
+      <view class="tip">提交后将由管理员审核，审核通过后该车牌才可在审核时段内入场。</view>
 
       <button class="primary-btn" loading="{{submitting}}" disabled="{{submitting || !canReport}}" bindtap="submit">提交报备</button>
     </view>

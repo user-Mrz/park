@@ -1,0 +1,70 @@
+<view class="container">
+  <!-- 顶部统计头：渐变背景 + 总车位/区域数 -->
+  <view class="page-header">
+    <view class="page-header-deco"></view>
+    <view class="stat-row">
+      <view class="stat-item">
+        <text class="stat-num">{{totalSpots}}</text>
+        <text class="stat-label">总车位</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-num">{{areaGroups.length}}</text>
+        <text class="stat-label">区域数</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-num stat-num-green">{{vacantCount}}</text>
+        <text class="stat-label">空闲中</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 状态提示 -->
+  <view class="status-box" wx:if="{{loading}}">
+    <view class="loading-text">加载车位中...</view>
+  </view>
+  <view class="status-box error" wx:elif="{{errorMsg}}">
+    <view class="error-text">{{errorMsg}}</view>
+    <button class="retry-btn" bindtap="loadSpots">点击重试</button>
+  </view>
+
+  <block wx:else>
+    <!-- 当前身份与可见停车区域提示（RBAC）：接口失败时 permText 为空，整块不渲染 -->
+    <view class="perm-section" wx:if="{{permText}}">
+      <view class="perm-hint">
+        <view class="perm-hint-icon">🎫</view>
+        <view class="perm-hint-text">{{permText}}</view>
+      </view>
+    </view>
+
+    <!-- 搜索框 -->
+    <view class="search-box">
+      <view class="search-icon">🔍</view>
+      <input class="search-input" placeholder="搜索车位编号或区域名" value="{{spotKeyword}}" bindinput="onKeywordInput" confirm-type="search" bindconfirm="onSpotSearch"/>
+      <view class="search-btn" bindtap="onSpotSearch">搜索</view>
+    </view>
+    <view class="search-hint" wx:if="{{spotKeyword}}">已匹配 {{searchMatched}} 个车位{{searchMatched === 0 ? '，请尝试其他关键字' : ''}}</view>
+
+    <!-- 区域分组列表 -->
+    <view class="area-group" wx:for="{{areaGroups}}" wx:key="area">
+      <view class="area-title" bindtap="toggleArea" data-area="{{item.area}}">
+        <text class="area-arrow {{spotKeyword || collapsedAreas[item.area] === false ? 'expanded' : ''}}">▸</text>
+        <text class="area-name">{{item.area}}</text>
+        <text class="area-count">{{item.spots.length}} 个</text>
+      </view>
+      <view class="spots-grid" wx:if="{{spotKeyword || collapsedAreas[item.area] === false}}">
+        <view class="spot-item spot-status-{{s.status}}" wx:for="{{item.spots}}" wx:key="id" wx:for-item="s">
+          <text class="spot-code spot-badge">{{s.spotCode}}</text>
+          <text class="spot-price">¥{{s.pricePerHour}}/h</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty empty-with-icon" wx:if="{{areaGroups.length === 0}}">
+      <view class="empty-icon">🅿️</view>
+      <view class="empty-text">暂无车位数据</view>
+    </view>
+  </block>
+</view>
